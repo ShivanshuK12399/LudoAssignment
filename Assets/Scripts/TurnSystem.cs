@@ -4,6 +4,9 @@ using static TurnSystem;
 
 public class TurnSystem : MonoBehaviour
 {
+    public static TurnSystem Instance { get; private set; }
+
+
     [Header("Components")]
     public DiceController dice;
     public PlayerController playerController;
@@ -19,6 +22,11 @@ public class TurnSystem : MonoBehaviour
 
     public bool rolledSix = false;
     private bool hasMovedAfterSix = false;
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
 
     void Start()
@@ -51,27 +59,8 @@ public class TurnSystem : MonoBehaviour
         if (rolledSix)
         {
             // Grant extra turn
-            Debug.Log("Extra Turn!");
             dice.SetDiceInteractive(true);
             return;
-        }
-    }
-
-    public void TryEndTurn()
-    {
-        if (rolledSix && !hasMovedAfterSix)
-        {
-            // Wait for piece movement
-            return;
-        }
-        else if (rolledSix && hasMovedAfterSix)
-        {
-            // Allow extra turn
-            StartTurn(currentPlayer);
-        }
-        else
-        {
-            SwitchTurn();
         }
     }
 

@@ -1,37 +1,35 @@
+using NUnit.Framework;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement")]
     public int stepsToMove = 0;
 
     [Header("Components")]
-    public GameObject selectedToken;
-    public TurnSystem turnSystem;
-    public BoardHandler boardHandler;
+    public GameObject selectedPiece;
 
 
     // select token from click
-    public void SelectToken(GameObject token)
+    public void SelectPiece(GameObject token)
     {
         PieceController piece = token.GetComponent<PieceController>();
-        if (!turnSystem.IsCurrentPlayerPiece(piece)) return;
+        if (!TurnSystem.Instance.IsCurrentPlayerPiece(piece)) return;
 
-        selectedToken = token;
-        //Debug.Log($"Selected token: {token.name}");
+        selectedPiece = token;
+        //Debug.Log($"Selected piece: {token.name}");
         MoveSelectedPiece();
     }
 
     public void MoveSelectedPiece()
     {
-        if (selectedToken == null || stepsToMove <= 0)
+        if (selectedPiece == null || stepsToMove <= 0)
         {
-            Debug.LogWarning("No token selected or invalid step count.");
+            Debug.LogWarning("No piece selected or invalid step count.");
             return;
         }
 
-        PieceController piece = selectedToken.GetComponent<PieceController>();
-        selectedToken = null; // Clear selection after moving
+        PieceController piece = selectedPiece.GetComponent<PieceController>();
+        selectedPiece = null; // Clear selection after moving
 
         if (piece != null)
         {
@@ -41,13 +39,13 @@ public class PlayerController : MonoBehaviour
         // When movement is done, decide if extra turn or switch
         piece.onMovementComplete = () =>
         {
-            if (turnSystem.rolledSix)
+            if (TurnSystem.Instance.rolledSix)
             {
-                turnSystem.StartTurn(turnSystem.currentPlayer); // Extra turn
+                TurnSystem.Instance.StartTurn(TurnSystem.Instance.currentPlayer); // Extra turn
             }
             else
             {
-                turnSystem.SwitchTurn(); // Normal switch
+                TurnSystem.Instance.SwitchTurn(); // Normal switch
             }
         };
 
@@ -55,7 +53,9 @@ public class PlayerController : MonoBehaviour
 
     public bool HasValidMove(int steps)
     {
-        foreach (var token in (turnSystem.currentPlayer == TurnSystem.Player.Green ? boardHandler.greenPieces : boardHandler.bluePieces))
+        GameObject[] pieces= TurnSystem.Instance.currentPlayer == TurnSystem.Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+        
+        foreach (var token in pieces)
         {
             var piece = token.GetComponent<PieceController>();
             if (piece.CanMove(steps))

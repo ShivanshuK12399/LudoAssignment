@@ -6,9 +6,7 @@ public class PieceController : MonoBehaviour
     public System.Action onMovementComplete;
 
     [Header("Components")]
-    public BoardHandler boardHandler;
     public PlayerController playerController;
-    private TurnSystem turnSystem;
 
     public enum PlayerColor { Green, Blue }
     [Space(15)]
@@ -18,45 +16,33 @@ public class PieceController : MonoBehaviour
 
     public float moveSpeed = 4f;
 
-    void Start()
-    {
-        turnSystem = playerController.turnSystem;
-    }
-
     void OnMouseDown()
     {
         if (playerController != null)
         {
-            playerController.SelectToken(gameObject);
+            playerController.SelectPiece(gameObject);
         }
     }
 
     public void MoveBySteps(int steps)
     {
-        if (boardHandler == null)
+        if (BoardHandler.Instance == null) return;
+
+        if (currentTileIndex == -1 && steps != 6)
         {
-            Debug.LogError("BoardHandler not found.");
+            Debug.Log("Need 6 to enter board.");
             return;
         }
 
-        if (currentTileIndex == -1)
-        {
-            if (steps < 6)
-            {
-                Debug.Log("Need 6 to enter board.");
-                return;
-            }
-        }
-
         // Get correct path based on piece color
-        var path = pieceColor == PlayerColor.Green ? boardHandler.greenPathPoints : boardHandler.bluePathPoints;
+        var path = pieceColor == PlayerColor.Green ? BoardHandler.Instance.greenPathPoints : BoardHandler.Instance.bluePathPoints;
 
         StartCoroutine(MoveAlongPath(path, steps));
     }
 
     IEnumerator MoveAlongPath(System.Collections.Generic.List<Transform> path, int steps)
     {
-        if (currentTileIndex == -1) steps = 1;
+        if (currentTileIndex == -1) steps = 1; // Move only 1 step when get on board from base
 
         while (steps > 0)
         {
@@ -80,7 +66,7 @@ public class PieceController : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
-        turnSystem.OnPieceMoved();
+        TurnSystem.Instance.OnPieceMoved();
         onMovementComplete?.Invoke(); // Movement complete, listinig this event in Player controller
     }
 
@@ -89,7 +75,7 @@ public class PieceController : MonoBehaviour
         if (currentTileIndex == -1)
             return steps == 6;
 
-        return currentTileIndex + steps < boardHandler.pathPointsCount;
+        return currentTileIndex + steps < BoardHandler.Instance.pathPointsCount;
     }
 
 }

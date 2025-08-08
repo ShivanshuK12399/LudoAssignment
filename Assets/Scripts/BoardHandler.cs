@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public class BoardHandler : MonoBehaviour
 {
+    public static BoardHandler Instance { get; private set; }
+
     [Header("Initial Points")]
     public List<Transform> initialGreenPoints;
     public List<Transform> initialBluePoints;
@@ -17,6 +19,18 @@ public class BoardHandler : MonoBehaviour
 
     [Space(15)]
     public int pathPointsCount = 38; // Total path points for each player
+
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // avoid duplicates
+            return;
+        }
+        Instance = this;
+    }
+
 
     void Start()
     {
