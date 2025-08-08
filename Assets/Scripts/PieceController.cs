@@ -1,5 +1,7 @@
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime;
+using UnityEngine;
 
 public class PieceController : MonoBehaviour
 {
@@ -11,17 +13,22 @@ public class PieceController : MonoBehaviour
     public enum PlayerColor { Green, Blue }
     [Space(15)]
     public PlayerColor pieceColor;
+    public Transform CurrentTile { get; private set; }
 
     private int currentTileIndex = -1; // -1 = not on board yet
-
-    public float moveSpeed = 4f;
+    private float moveSpeed = 4f;
 
     void OnMouseDown()
     {
         if (playerController != null)
         {
+            playerController = GameManager.Instance.GetCurrentPlayer();
             playerController.SelectPiece(gameObject);
         }
+    }
+    public void UpdateTile(Transform newTile)
+    {
+        CurrentTile = newTile;
     }
 
     public void MoveBySteps(int steps)
@@ -66,8 +73,38 @@ public class PieceController : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
-        TurnSystem.Instance.OnPieceMoved();
         onMovementComplete?.Invoke(); // Movement complete, listinig this event in Player controller
+        TurnSystem.Instance.OnPieceMoved();
+        UpdateTile(path[currentTileIndex]);
+        CheckCapture();
+    }
+
+    public void CheckCapture()
+    {
+        Transform currentTile = CurrentTile;
+        if (BoardHandler.Instance.IsSafeTile(currentTile)) return;
+
+        List<PieceController> opponent = BoardHandler.Instance.GetOpponentPieceOnTile(currentTile, this);
+
+        if (opponent.Count>0)
+        {
+            foreach(PieceController piece in opponent)
+            {
+                //Debug.Log($"Captured {piece}");
+                piece.SendToBase();
+            }
+            print("Captured opponent");
+            TurnSystem.Instance.StartTurn((pieceColor == PlayerColor.Green) ? TurnSystem.Player.Green : TurnSystem.Player.Blue);
+        }
+    }
+
+    public void SendToBase()
+    {
+        currentTileIndex = -1;
+        TurnSystem.Player player=(pieceColor==PlayerColor.Green)? TurnSystem.Player.Green : TurnSystem.Player.Blue;
+
+        BoardHandler.Instance.PlacePiecesAtStart(this.gameObject, player);
+        UpdateTile(null);
     }
 
     public bool CanMove(int steps)

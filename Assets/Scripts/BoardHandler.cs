@@ -5,17 +5,21 @@ public class BoardHandler : MonoBehaviour
 {
     public static BoardHandler Instance { get; private set; }
 
-    [Header("Initial Points")]
+    [Header("Initial Tiles")]
     public List<Transform> initialGreenPoints;
     public List<Transform> initialBluePoints;
 
-    [Header("Path Points")]
+    [Header("Path Tiles")]
     public List<Transform> greenPathPoints;
     public List<Transform> bluePathPoints;
+    public List<Transform> safeTiles;
+
 
     [Header("Pieces")]
     public GameObject[] greenPieces;
     public GameObject[] bluePieces;
+    public List<PieceController> allPieces; // active pieces
+
 
     [Space(15)]
     public int pathPointsCount = 38; // Total path points for each player
@@ -34,7 +38,19 @@ public class BoardHandler : MonoBehaviour
 
     void Start()
     {
-        PlacePiecesAtStart();
+        foreach (GameObject token in greenPieces)
+            PlacePiecesAtStart(token, TurnSystem.Player.Green);
+
+        foreach (GameObject token in bluePieces)
+            PlacePiecesAtStart(token, TurnSystem.Player.Blue);
+    }
+
+    public void PlacePiecesAtStart(GameObject token,TurnSystem.Player player)
+    {
+        List<Transform>initialPoints = (player == TurnSystem.Player.Green) ? initialGreenPoints : initialBluePoints;
+        GameObject[] pieces = (player == TurnSystem.Player.Green) ? greenPieces : bluePieces;
+
+        token.transform.position = initialPoints[System.Array.IndexOf(pieces, token)].position;
     }
 
     public Transform GetTileAt(int index, List<Transform> pathPoints)
@@ -44,13 +60,24 @@ public class BoardHandler : MonoBehaviour
         return null;
     }
 
-    void PlacePiecesAtStart()
+    public List<PieceController> GetOpponentPieceOnTile(Transform movingPieceCurrentTile, PieceController movingPiece)
     {
-        foreach (GameObject token in greenPieces)
-            token.transform.position = initialGreenPoints[System.Array.IndexOf(greenPieces, token)].position;
+        List<PieceController> capturedPieces = new List<PieceController>();
+        foreach (var piece in allPieces)
+        {
+            if (piece == movingPiece) continue;
 
-        foreach (GameObject token in bluePieces)
-            token.transform.position = initialBluePoints[System.Array.IndexOf(bluePieces, token)].position;
+            if (piece.CurrentTile == movingPieceCurrentTile && piece.playerController != movingPiece.playerController)
+            {
+                capturedPieces.Add(piece);
+            }
+        }
+        print(capturedPieces.Count);
+        return capturedPieces;
     }
 
+    public bool IsSafeTile(Transform tile)
+    {
+        return safeTiles.Contains(tile);
+    }
 }

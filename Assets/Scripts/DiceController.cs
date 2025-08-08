@@ -4,7 +4,6 @@ using UnityEngine.UI; // If using UI Button (optional)
 public class DiceController : MonoBehaviour
 {
     [Header("Components")]
-    public PlayerController playerController;
     public SpriteRenderer diceRenderer; // Drag your dice sprite object here
     public Animator animator; // Unity Animator with rolling animation
 

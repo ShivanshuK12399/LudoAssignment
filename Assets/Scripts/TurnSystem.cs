@@ -9,7 +9,6 @@ public class TurnSystem : MonoBehaviour
 
     [Header("Components")]
     public DiceController dice;
-    public PlayerController playerController;
 
     [Header("Dice Holders")]
     [SerializeField] private Transform greenDiceHolder;
@@ -39,9 +38,9 @@ public class TurnSystem : MonoBehaviour
         rolledSix = (number == 6);
         hasMovedAfterSix = false;
 
-        playerController.stepsToMove = number;
+        GameManager.Instance.GetCurrentPlayer().stepsToMove = number;
 
-        bool hasMovableToken = playerController.HasValidMove(number);
+        bool hasMovableToken = GameManager.Instance.GetCurrentPlayer().HasValidMove(number);
 
         if (!hasMovableToken)
         {
@@ -54,7 +53,7 @@ public class TurnSystem : MonoBehaviour
     {
         hasMovedAfterSix = true;
         dice.rolledNumber = 0;
-        playerController.stepsToMove = 0;
+        GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
 
         if (rolledSix)
         {
@@ -66,10 +65,10 @@ public class TurnSystem : MonoBehaviour
 
     public void StartTurn(Player player)
     {
+        dice.rolledNumber = GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
         currentPlayer = player;
         rolledSix = false;
         hasMovedAfterSix = false;
-        dice.rolledNumber = playerController.stepsToMove = 0;
 
         MoveDiceToPlayer(player);      // Move dice to correct holder
         dice.SetDiceInteractive(true); // Allow roll at start

@@ -264,9 +264,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd8e8fa4c066524498e34044b923d3f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerController: {fileID: 1080178699}
+  playerController: {fileID: 0}
   pieceColor: 0
-  moveSpeed: 4
 --- !u!1001 &123177778
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -737,6 +736,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 358339012}
+  - component: {fileID: 358339013}
   m_Layer: 0
   m_Name: GreenHome
   m_TagString: Untagged
@@ -762,6 +762,20 @@ Transform:
   - {fileID: 827716669}
   m_Father: {fileID: 682049684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &358339013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358339011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe455388c36091c40a1e957718ab27bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stepsToMove: 0
+  selectedPiece: {fileID: 0}
 --- !u!1001 &501901697
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1295,12 +1309,20 @@ MonoBehaviour:
   - {fileID: 1670597915}
   - {fileID: 961591647}
   - {fileID: 1193279045}
+  safeTiles:
+  - {fileID: 522386705}
+  - {fileID: 2130692223}
   greenPieces:
   - {fileID: 1435122743}
   - {fileID: 112038175}
   bluePieces:
   - {fileID: 1028461393}
   - {fileID: 1728836674}
+  allPieces:
+  - {fileID: 1028461394}
+  - {fileID: 1728836675}
+  - {fileID: 1435122744}
+  - {fileID: 112038176}
   pathPointsCount: 38
 --- !u!212 &682049683
 SpriteRenderer:
@@ -1863,6 +1885,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 881489155}
+  - component: {fileID: 881489156}
   m_Layer: 0
   m_Name: BlueHome (1)
   m_TagString: Untagged
@@ -1888,6 +1911,20 @@ Transform:
   - {fileID: 1283317537}
   m_Father: {fileID: 682049684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &881489156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 881489154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe455388c36091c40a1e957718ab27bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stepsToMove: 0
+  selectedPiece: {fileID: 0}
 --- !u!1001 &906337859
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2093,9 +2130,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd8e8fa4c066524498e34044b923d3f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerController: {fileID: 1080178699}
+  playerController: {fileID: 0}
   pieceColor: 1
-  moveSpeed: 4
 --- !u!1001 &1050509344
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2167,7 +2203,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1080178700}
-  - component: {fileID: 1080178699}
+  - component: {fileID: 1080178702}
   - component: {fileID: 1080178701}
   m_Layer: 0
   m_Name: GameManager
@@ -2176,20 +2212,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1080178699
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1080178698}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe455388c36091c40a1e957718ab27bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stepsToMove: 0
-  selectedPiece: {fileID: 0}
 --- !u!4 &1080178700
 Transform:
   m_ObjectHideFlags: 0
@@ -2218,11 +2240,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dice: {fileID: 1829289643}
-  playerController: {fileID: 1080178699}
   greenDiceHolder: {fileID: 827716669}
   blueDiceHolder: {fileID: 1283317537}
   currentPlayer: 0
   rolledSix: 0
+--- !u!114 &1080178702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080178698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b9487078bae2ad4c99b7048bd5f229d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  greenPlayerController: {fileID: 358339013}
+  bluePlayerController: {fileID: 881489156}
 --- !u!1001 &1089588722
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3052,9 +3087,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd8e8fa4c066524498e34044b923d3f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerController: {fileID: 1080178699}
+  playerController: {fileID: 0}
   pieceColor: 0
-  moveSpeed: 4
 --- !u!1001 &1490335484
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3596,9 +3630,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd8e8fa4c066524498e34044b923d3f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerController: {fileID: 1080178699}
+  playerController: {fileID: 0}
   pieceColor: 1
-  moveSpeed: 4
 --- !u!1001 &1790235867
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3924,7 +3957,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1befb48fb8e55e240ad874f08335cb97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerController: {fileID: 1080178699}
   diceRenderer: {fileID: 1829289642}
   animator: {fileID: 1829289641}
   diceFaces:
@@ -3934,7 +3966,7 @@ MonoBehaviour:
   - {fileID: 1211833399334346087, guid: 853638679091aa44eb5dfbc7099f0c2e, type: 3}
   - {fileID: 5944423071161769890, guid: 853638679091aa44eb5dfbc7099f0c2e, type: 3}
   - {fileID: -5530243182741418144, guid: 853638679091aa44eb5dfbc7099f0c2e, type: 3}
-  getDiceNumManually: 0
+  getDiceNumManually: 1
   rolledNumber: 0
 --- !u!61 &1829289644
 BoxCollider2D:
