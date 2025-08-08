@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using UnityEngine;
+using static TurnSystem;
 
 public class TurnSystem : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class TurnSystem : MonoBehaviour
     public Player currentPlayer = Player.Green;
     public event Action<Player> OnTurnChanged;
 
-    private bool rolledSix = false;
+    public bool rolledSix = false;
     private bool hasMovedAfterSix = false;
 
 
@@ -31,6 +32,14 @@ public class TurnSystem : MonoBehaviour
         hasMovedAfterSix = false;
 
         playerController.stepsToMove = number;
+
+        bool hasMovableToken = playerController.HasValidMove(number);
+
+        if (!hasMovableToken)
+        {
+            Debug.Log("No valid tokens to move. Switching turn...");
+            Invoke(nameof(SwitchTurn), 0.5f);
+        }
     }
 
     public void OnPieceMoved()
@@ -43,9 +52,9 @@ public class TurnSystem : MonoBehaviour
         {
             // Grant extra turn
             Debug.Log("Extra Turn!");
+            dice.SetDiceInteractive(true);
             return;
         }
-        SwitchTurn();
     }
 
     public void TryEndTurn()
@@ -66,20 +75,21 @@ public class TurnSystem : MonoBehaviour
         }
     }
 
-    private void StartTurn(Player player)
+    public void StartTurn(Player player)
     {
         currentPlayer = player;
         rolledSix = false;
         hasMovedAfterSix = false;
+        dice.rolledNumber = playerController.stepsToMove = 0;
 
-        dice.SetDiceInteractive(true); // Allow roll at start
         MoveDiceToPlayer(player);      // Move dice to correct holder
+        dice.SetDiceInteractive(true); // Allow roll at start
 
         OnTurnChanged?.Invoke(currentPlayer);
         Debug.Log($"Turn: {currentPlayer}");
     }
 
-    private void SwitchTurn()
+    public void SwitchTurn()
     {
         Player next = currentPlayer == Player.Green ? Player.Blue : Player.Green;
         StartTurn(next);

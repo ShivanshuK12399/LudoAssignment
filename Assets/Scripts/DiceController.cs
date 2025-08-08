@@ -15,7 +15,7 @@ public class DiceController : MonoBehaviour
     public int rolledNumber = 0; // To be used by PlayerController
 
     private bool isRolling = false;
-    private bool canRoll = false;
+    private bool canRoll = true;
 
     void OnMouseDown()
     {
@@ -34,12 +34,14 @@ public class DiceController : MonoBehaviour
     public void RollDice()
     {
         isRolling = true;
-        rolledNumber = Random.Range(1, 7); // Random number between 1-6
+        canRoll = false;
         animator.Play("DiceRoll", -1, 0f); // Name of your dice animation clip
+        Invoke(nameof(OnDiceAnimationComplete), 0.25f);
     }
 
     public void OnDiceAnimationComplete()
     {
+        rolledNumber = Random.Range(5, 7); // Random number between 1-6
         animator.enabled = false; 
         diceRenderer.sprite = diceFaces[rolledNumber - 1]; // Show result face
         isRolling = false;

@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     [Header("Components")]
     public GameObject selectedToken;
     public TurnSystem turnSystem;
+    public BoardHandler boardHandler;
 
 
     // select token from click
@@ -30,9 +31,37 @@ public class PlayerController : MonoBehaviour
         }
 
         PieceController piece = selectedToken.GetComponent<PieceController>();
+        selectedToken = null; // Clear selection after moving
+
         if (piece != null)
         {
             piece.MoveBySteps(stepsToMove);
         }
+
+        // When movement is done, decide if extra turn or switch
+        piece.onMovementComplete = () =>
+        {
+            if (turnSystem.rolledSix)
+            {
+                turnSystem.StartTurn(turnSystem.currentPlayer); // Extra turn
+            }
+            else
+            {
+                turnSystem.SwitchTurn(); // Normal switch
+            }
+        };
+
     }
+
+    public bool HasValidMove(int steps)
+    {
+        foreach (var token in (turnSystem.currentPlayer == TurnSystem.Player.Green ? boardHandler.greenPieces : boardHandler.bluePieces))
+        {
+            var piece = token.GetComponent<PieceController>();
+            if (piece.CanMove(steps))
+                return true;
+        }
+        return false;
+    }
+
 }

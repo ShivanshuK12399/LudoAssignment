@@ -15,6 +15,9 @@ public class BoardHandler : MonoBehaviour
     public GameObject[] greenPieces;
     public GameObject[] bluePieces;
 
+    [Space(15)]
+    public int pathPointsCount = 38; // Total path points for each player
+
     void Start()
     {
         PlacePiecesAtStart();

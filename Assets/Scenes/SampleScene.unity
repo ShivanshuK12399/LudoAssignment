@@ -1302,6 +1302,7 @@ MonoBehaviour:
   bluePieces:
   - {fileID: 1028461393}
   - {fileID: 1728836674}
+  pathPointsCount: 38
 --- !u!212 &682049683
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2192,6 +2193,7 @@ MonoBehaviour:
   stepsToMove: 0
   selectedToken: {fileID: 0}
   turnSystem: {fileID: 1080178701}
+  boardHandler: {fileID: 682049682}
 --- !u!4 &1080178700
 Transform:
   m_ObjectHideFlags: 0
@@ -2224,6 +2226,7 @@ MonoBehaviour:
   greenDiceHolder: {fileID: 827716669}
   blueDiceHolder: {fileID: 1283317537}
   currentPlayer: 0
+  rolledSix: 0
 --- !u!1001 &1089588722
 PrefabInstance:
   m_ObjectHideFlags: 0

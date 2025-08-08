@@ -3,6 +3,8 @@ using System.Collections;
 
 public class PieceController : MonoBehaviour
 {
+    public System.Action onMovementComplete;
+
     [Header("Components")]
     public BoardHandler boardHandler;
     public PlayerController playerController;
@@ -49,7 +51,6 @@ public class PieceController : MonoBehaviour
         // Get correct path based on piece color
         var path = pieceColor == PlayerColor.Green ? boardHandler.greenPathPoints : boardHandler.bluePathPoints;
 
-        turnSystem.OnPieceMoved();
         StartCoroutine(MoveAlongPath(path, steps));
     }
 
@@ -78,5 +79,17 @@ public class PieceController : MonoBehaviour
             steps--;
             yield return new WaitForSeconds(0.1f);
         }
+
+        turnSystem.OnPieceMoved();
+        onMovementComplete?.Invoke(); // Movement complete, listinig this event in Player controller
     }
+
+    public bool CanMove(int steps)
+    {
+        if (currentTileIndex == -1)
+            return steps == 6;
+
+        return currentTileIndex + steps < boardHandler.pathPointsCount;
+    }
+
 }
