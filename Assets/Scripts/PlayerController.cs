@@ -1,9 +1,11 @@
 using NUnit.Framework;
 using UnityEngine;
+using static PieceController;
 
 public class PlayerController : MonoBehaviour
 {
     public int stepsToMove = 0;
+    public int homeCount = 0;
 
     [Header("Components")]
     public GameObject selectedPiece;
@@ -13,12 +15,19 @@ public class PlayerController : MonoBehaviour
     public void SelectPiece(GameObject token)
     {
         PieceController piece = token.GetComponent<PieceController>();
-        if (!TurnSystem.Instance.IsCurrentPlayerPiece(piece)) return;
 
+        // Check if the selected piece belongs to the current player
+        if (!GameManager.Instance.DoesPieceBelongToCurrentPlayer(piece))
+        {
+            print("Selected piece not belongs to the current player");
+            return;
+        }
+
+        print("Piece selected");
         selectedPiece = token;
-        //Debug.Log($"Selected piece: {token.name}");
         MoveSelectedPiece();
     }
+
 
     public void MoveSelectedPiece()
     {
@@ -41,11 +50,12 @@ public class PlayerController : MonoBehaviour
         {
             if (TurnSystem.Instance.rolledSix)
             {
-                TurnSystem.Instance.StartTurn(TurnSystem.Instance.currentPlayer); // Extra turn
+                TurnSystem.Instance.StartTurn(GameManager.Instance.currentPlayer); // Extra turn
             }
             else
             {
-                TurnSystem.Instance.SwitchTurn(); // Normal switch
+                //print($"Player switched from {this}");
+                GameManager.Instance.SwitchTurn(); // Normal switch
             }
         };
 
@@ -53,7 +63,7 @@ public class PlayerController : MonoBehaviour
 
     public bool HasValidMove(int steps)
     {
-        GameObject[] pieces= TurnSystem.Instance.currentPlayer == TurnSystem.Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+        GameObject[] pieces= GameManager.Instance.currentPlayer == TurnSystem.Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
         
         foreach (var token in pieces)
         {
@@ -64,4 +74,17 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    public void CheckWinCondition(GameObject[] pieces)
+    {
+        foreach (GameObject token in pieces)
+        {
+            if (token.GetComponent<PieceController>().hasReachedHome)
+                homeCount++;
+        }
+
+        if (homeCount >= 2) // 2 in num of pieces in game
+        {
+            GameManager.Instance.PlayerWon(GameManager.Instance.currentPlayer);
+        }
+    }
 }

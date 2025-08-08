@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using static TurnSystem;
 
 public class TurnSystem : MonoBehaviour
 {
@@ -15,12 +14,9 @@ public class TurnSystem : MonoBehaviour
     [SerializeField] private Transform blueDiceHolder;
 
     public enum Player { Green, Blue }
-    [Space(15)]
-    public Player currentPlayer = Player.Green;
-    public event Action<Player> OnTurnChanged;
-
+    public event Action<TurnSystem.Player> OnTurnChanged;
     public bool rolledSix = false;
-    private bool hasMovedAfterSix = false;
+    public bool hasMovedAfterSix = false;
 
     void Awake()
     {
@@ -28,9 +24,19 @@ public class TurnSystem : MonoBehaviour
     }
 
 
-    void Start()
+    public void StartTurn(Player player)
     {
-        StartTurn(Player.Green);
+        dice.rolledNumber = GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
+        rolledSix = false;
+        hasMovedAfterSix = false;
+
+        if (GameManager.Instance.gameEnded) return; // Don't change turn if game ended
+
+        MoveDiceToPlayer(player);      // Move dice to correct holder
+        dice.SetDiceInteractive(true); // Allow roll at start
+
+        OnTurnChanged?.Invoke(player);
+        Debug.Log($"Turn: {player}");
     }
 
     public void OnDiceRolled(int number)
@@ -48,6 +54,11 @@ public class TurnSystem : MonoBehaviour
             Invoke(nameof(SwitchTurn), 0.5f);
         }
     }
+    void SwitchTurn()
+    {
+        //print($"Player switched from {this}");
+        GameManager.Instance.SwitchTurn(); 
+    }
 
     public void OnPieceMoved()
     {
@@ -61,32 +72,6 @@ public class TurnSystem : MonoBehaviour
             dice.SetDiceInteractive(true);
             return;
         }
-    }
-
-    public void StartTurn(Player player)
-    {
-        dice.rolledNumber = GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
-        currentPlayer = player;
-        rolledSix = false;
-        hasMovedAfterSix = false;
-
-        MoveDiceToPlayer(player);      // Move dice to correct holder
-        dice.SetDiceInteractive(true); // Allow roll at start
-
-        OnTurnChanged?.Invoke(currentPlayer);
-        Debug.Log($"Turn: {currentPlayer}");
-    }
-
-    public void SwitchTurn()
-    {
-        Player next = currentPlayer == Player.Green ? Player.Blue : Player.Green;
-        StartTurn(next);
-    }
-
-    public bool IsCurrentPlayerPiece(PieceController piece)
-    {
-        return (currentPlayer == Player.Green && piece.pieceColor == PieceController.PlayerColor.Green)
-            || (currentPlayer == Player.Blue && piece.pieceColor == PieceController.PlayerColor.Blue);
     }
 
     private void MoveDiceToPlayer(Player player)

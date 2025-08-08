@@ -265,7 +265,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
-  pieceColor: 0
+  hasReachedHome: 0
+  pieceOwner: 0
 --- !u!1001 &123177778
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -775,6 +776,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stepsToMove: 0
+  homeCount: 0
   selectedPiece: {fileID: 0}
 --- !u!1001 &501901697
 PrefabInstance:
@@ -1924,6 +1926,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stepsToMove: 0
+  homeCount: 0
   selectedPiece: {fileID: 0}
 --- !u!1001 &906337859
 PrefabInstance:
@@ -2131,7 +2134,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
-  pieceColor: 1
+  hasReachedHome: 0
+  pieceOwner: 1
 --- !u!1001 &1050509344
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2242,8 +2246,8 @@ MonoBehaviour:
   dice: {fileID: 1829289643}
   greenDiceHolder: {fileID: 827716669}
   blueDiceHolder: {fileID: 1283317537}
-  currentPlayer: 0
   rolledSix: 0
+  hasMovedAfterSix: 0
 --- !u!114 &1080178702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2258,6 +2262,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   greenPlayerController: {fileID: 358339013}
   bluePlayerController: {fileID: 881489156}
+  currentPlayer: 0
+  gameEnded: 0
 --- !u!1001 &1089588722
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3088,7 +3094,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
-  pieceColor: 0
+  hasReachedHome: 0
+  pieceOwner: 0
 --- !u!1001 &1490335484
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3631,7 +3638,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
-  pieceColor: 1
+  hasReachedHome: 0
+  pieceOwner: 1
 --- !u!1001 &1790235867
 PrefabInstance:
   m_ObjectHideFlags: 0

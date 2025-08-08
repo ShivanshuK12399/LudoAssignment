@@ -53,13 +53,6 @@ public class BoardHandler : MonoBehaviour
         token.transform.position = initialPoints[System.Array.IndexOf(pieces, token)].position;
     }
 
-    public Transform GetTileAt(int index, List<Transform> pathPoints)
-    {
-        if (index >= 0 && index < pathPoints.Count)
-            return pathPoints[index];
-        return null;
-    }
-
     public List<PieceController> GetOpponentPieceOnTile(Transform movingPieceCurrentTile, PieceController movingPiece)
     {
         List<PieceController> capturedPieces = new List<PieceController>();
@@ -72,7 +65,6 @@ public class BoardHandler : MonoBehaviour
                 capturedPieces.Add(piece);
             }
         }
-        print(capturedPieces.Count);
         return capturedPieces;
     }
 
@@ -80,4 +72,20 @@ public class BoardHandler : MonoBehaviour
     {
         return safeTiles.Contains(tile);
     }
+
+    public void ResetBoard()
+    {
+        /*foreach (GameObject token in greenPieces)
+        {
+            token.GetComponent<PieceController>().ResetPiece();
+            token.transform.position = initialGreenPoints[System.Array.IndexOf(greenPieces, token)].position;
+        }
+
+        foreach (GameObject token in bluePieces)
+        {
+            token.GetComponent<PieceController>().ResetPiece();
+            token.transform.position = initialBluePoints[System.Array.IndexOf(bluePieces, token)].position;
+        }*/
+    }
+
 }

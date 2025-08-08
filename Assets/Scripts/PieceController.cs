@@ -5,18 +5,19 @@ using UnityEngine;
 
 public class PieceController : MonoBehaviour
 {
+    public Transform CurrentTile { get; private set; }
     public System.Action onMovementComplete;
 
     [Header("Components")]
     public PlayerController playerController;
 
-    public enum PlayerColor { Green, Blue }
     [Space(15)]
-    public PlayerColor pieceColor;
-    public Transform CurrentTile { get; private set; }
+    public TurnSystem.Player pieceOwner;
+    public bool hasReachedHome = false;
 
     private int currentTileIndex = -1; // -1 = not on board yet
-    private float moveSpeed = 4f;
+    private float moveSpeed = 6f;
+
 
     void OnMouseDown()
     {
@@ -26,6 +27,7 @@ public class PieceController : MonoBehaviour
             playerController.SelectPiece(gameObject);
         }
     }
+
     public void UpdateTile(Transform newTile)
     {
         CurrentTile = newTile;
@@ -42,7 +44,7 @@ public class PieceController : MonoBehaviour
         }
 
         // Get correct path based on piece color
-        var path = pieceColor == PlayerColor.Green ? BoardHandler.Instance.greenPathPoints : BoardHandler.Instance.bluePathPoints;
+        var path = pieceOwner == TurnSystem.Player.Green ? BoardHandler.Instance.greenPathPoints : BoardHandler.Instance.bluePathPoints;
 
         StartCoroutine(MoveAlongPath(path, steps));
     }
@@ -54,7 +56,6 @@ public class PieceController : MonoBehaviour
         while (steps > 0)
         {
             int nextIndex = currentTileIndex + 1;
-
             if (nextIndex >= path.Count)
             {
                 Debug.Log($"{name} has reached the end.");
@@ -70,19 +71,39 @@ public class PieceController : MonoBehaviour
 
             currentTileIndex = nextIndex;
             steps--;
+
+            if (currentTileIndex + 1 == path.Count) // currentTileIndex + 1 is used beacuse indexing start from 0
+            {
+                Debug.Log($"{name} has reached home.");
+                hasReachedHome = true;
+
+                GameObject[] pieces = GameManager.Instance.currentPlayer == TurnSystem.Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+                GameManager.Instance.GetCurrentPlayer().CheckWinCondition(pieces);
+                TurnSystem.Instance.StartTurn(GameManager.Instance.currentPlayer); // Extra turn
+
+                goto Skip;  // skipping updates(like TurnChange, DiceChange) on piece reaching home
+            }
+
             yield return new WaitForSeconds(0.1f);
         }
 
-        onMovementComplete?.Invoke(); // Movement complete, listinig this event in Player controller
-        TurnSystem.Instance.OnPieceMoved();
+        // Movement complete
+        
+        onMovementComplete?.Invoke();  // listinig this event in Player controller
         UpdateTile(path[currentTileIndex]);
         CheckCapture();
+Skip:
+        TurnSystem.Instance.OnPieceMoved();
     }
 
     public void CheckCapture()
     {
         Transform currentTile = CurrentTile;
-        if (BoardHandler.Instance.IsSafeTile(currentTile)) return;
+        if (BoardHandler.Instance.IsSafeTile(currentTile) || this.hasReachedHome)
+        {
+            // Don't capture piece if on safe tile or reached home
+            return;
+        }
 
         List<PieceController> opponent = BoardHandler.Instance.GetOpponentPieceOnTile(currentTile, this);
 
@@ -94,14 +115,15 @@ public class PieceController : MonoBehaviour
                 piece.SendToBase();
             }
             print("Captured opponent");
-            TurnSystem.Instance.StartTurn((pieceColor == PlayerColor.Green) ? TurnSystem.Player.Green : TurnSystem.Player.Blue);
+            //print($"Player switched from {this}");
+            GameManager.Instance.SwitchTurn();
         }
     }
 
     public void SendToBase()
     {
         currentTileIndex = -1;
-        TurnSystem.Player player=(pieceColor==PlayerColor.Green)? TurnSystem.Player.Green : TurnSystem.Player.Blue;
+        TurnSystem.Player player=(pieceOwner==TurnSystem.Player.Green)? TurnSystem.Player.Green : TurnSystem.Player.Blue;
 
         BoardHandler.Instance.PlacePiecesAtStart(this.gameObject, player);
         UpdateTile(null);
@@ -113,6 +135,21 @@ public class PieceController : MonoBehaviour
             return steps == 6;
 
         return currentTileIndex + steps < BoardHandler.Instance.pathPointsCount;
+    }
+
+    public void MoveTo(Transform targetTile, bool isFinalTile)
+    {
+        transform.position = targetTile.position;
+
+        if (isFinalTile)
+            hasReachedHome = true;
+    }
+
+    public void ResetPiece()
+    {
+        /*currentStep = 0;
+        isOnBoard = false;
+        hasReachedHome = false;*/
     }
 
 }
