@@ -41,6 +41,8 @@ public class TurnSystem : MonoBehaviour
 
     public void OnDiceRolled(int number)
     {
+        // when dice is rolled its gets called
+
         rolledSix = (number == 6);
         hasMovedAfterSix = false;
 
@@ -60,8 +62,10 @@ public class TurnSystem : MonoBehaviour
         GameManager.Instance.SwitchTurn(); 
     }
 
-    public void OnPieceMoved()
+    public void OnPieceMoved() 
     {
+        // When piece movement is completed its gets called
+
         hasMovedAfterSix = true;
         dice.rolledNumber = 0;
         GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
@@ -74,8 +78,10 @@ public class TurnSystem : MonoBehaviour
         }
     }
 
-    private void MoveDiceToPlayer(Player player)
+    private void MoveDiceToPlayer(Player player) 
     {
+        // Moves dice parent to current payer
+
         Transform holder = (player == Player.Green) ? greenDiceHolder : blueDiceHolder;
         dice.transform.SetParent(holder);
         dice.transform.localPosition = new Vector3(0, 0, -0.5f);

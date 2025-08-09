@@ -6,12 +6,14 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public event System.Action<TurnSystem.Player> OnPlayerWon;
-    public event Action OnMatchRestarted;
+    //public event Action OnMatchRestarted;
 
     public PlayerController greenPlayerController;
     public PlayerController bluePlayerController;
     public TurnSystem.Player currentPlayer;
     public bool gameEnded = false;
+
+    private PlayerController[] allPlayers;
 
     void Awake()
     {
@@ -21,8 +23,11 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // Assign owners to tokens
+        // Assign owners to pieces
         AssignTokenOwners();
+        allPlayers = new PlayerController[] { greenPlayerController, bluePlayerController };
+
+        // Start the game with the first turn
         StartTurn(TurnSystem.Player.Green);
     }
 
@@ -44,6 +49,7 @@ public class GameManager : MonoBehaviour
     {
         //print($"Current player: {player}");
         currentPlayer = player;
+        UpdatePiecesZ();
         TurnSystem.Instance.StartTurn(player);
     }
 
@@ -72,6 +78,20 @@ public class GameManager : MonoBehaviour
         // Stop game or show win screen later
         gameEnded = true;
         TurnSystem.Instance.dice.SetDiceInteractive(false);
+    }
+
+    public void UpdatePiecesZ() // Update Z position of pieces based on current player
+    {
+        foreach (var player in allPlayers) // allPlayers is a list of PlayerControllers
+        {
+            bool isCurrent = (player == GetCurrentPlayer());
+            var pieces = (player.player==TurnSystem.Player.Green)? BoardHandler.Instance.greenPieces:BoardHandler.Instance.bluePieces;
+
+            foreach (var piece in pieces)
+            {
+                piece.GetComponent<PieceController>().SetPieceZ(isCurrent);
+            }
+        }
     }
 
     public void RestartMatch() // for future updates...

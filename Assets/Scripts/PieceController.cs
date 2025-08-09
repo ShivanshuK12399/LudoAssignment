@@ -30,6 +30,7 @@ public class PieceController : MonoBehaviour
 
     public void UpdateTile(Transform newTile)
     {
+        // tracks piece tile
         CurrentTile = newTile;
     }
 
@@ -122,6 +123,8 @@ Skip:
 
     public void SendToBase()
     {
+        // Send captured piece to its respective base
+
         currentTileIndex = -1;
         TurnSystem.Player player=(pieceOwner==TurnSystem.Player.Green)? TurnSystem.Player.Green : TurnSystem.Player.Blue;
 
@@ -129,20 +132,24 @@ Skip:
         UpdateTile(null);
     }
 
+    public void SetPieceZ(bool isCurrentPlayer) 
+    {
+        // Make current player's piece appear above the opponent's
+
+        Vector3 pos = transform.position;
+        pos.z = isCurrentPlayer ? -2f : -1f;
+        transform.position = pos;
+    }
+
+
     public bool CanMove(int steps)
     {
+        // Checks if player can move
+
         if (currentTileIndex == -1)
             return steps == 6;
 
         return currentTileIndex + steps < BoardHandler.Instance.pathPointsCount;
-    }
-
-    public void MoveTo(Transform targetTile, bool isFinalTile)
-    {
-        transform.position = targetTile.position;
-
-        if (isFinalTile)
-            hasReachedHome = true;
     }
 
     public void ResetPiece()

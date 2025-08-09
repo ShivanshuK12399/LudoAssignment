@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Components")]
     public GameObject selectedPiece;
+    public TurnSystem.Player player;
 
 
     // select token from click
@@ -31,7 +32,7 @@ public class PlayerController : MonoBehaviour
 
     public void MoveSelectedPiece()
     {
-        if (selectedPiece == null || stepsToMove <= 0)
+        if (selectedPiece == null || stepsToMove < 0)
         {
             Debug.LogWarning("No piece selected or invalid step count.");
             return;

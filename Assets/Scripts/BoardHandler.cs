@@ -38,6 +38,8 @@ public class BoardHandler : MonoBehaviour
 
     void Start()
     {
+        // Setting pieces intitial location
+
         foreach (GameObject token in greenPieces)
             PlacePiecesAtStart(token, TurnSystem.Player.Green);
 
@@ -47,6 +49,8 @@ public class BoardHandler : MonoBehaviour
 
     public void PlacePiecesAtStart(GameObject token,TurnSystem.Player player)
     {
+        // Sets pieces to its start location
+
         List<Transform>initialPoints = (player == TurnSystem.Player.Green) ? initialGreenPoints : initialBluePoints;
         GameObject[] pieces = (player == TurnSystem.Player.Green) ? greenPieces : bluePieces;
 
@@ -55,6 +59,8 @@ public class BoardHandler : MonoBehaviour
 
     public List<PieceController> GetOpponentPieceOnTile(Transform movingPieceCurrentTile, PieceController movingPiece)
     {
+        // Give list of pieces on tile which is to be captured
+
         List<PieceController> capturedPieces = new List<PieceController>();
         foreach (var piece in allPieces)
         {

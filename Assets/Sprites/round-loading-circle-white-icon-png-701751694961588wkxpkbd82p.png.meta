@@ -1,0 +1,533 @@
+fileFormatVersion: 2
+guid: dd05da72e1b040240966efe747242c86
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2924494169533352285
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_0
+  - first:
+      213: -1684190280819484333
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_1
+  - first:
+      213: -3689804593658350980
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_2
+  - first:
+      213: 5294467034968313560
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_3
+  - first:
+      213: -4010642780968599930
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_4
+  - first:
+      213: -4889175944740122333
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_5
+  - first:
+      213: -1739899608898365923
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_6
+  - first:
+      213: 3935682333368104885
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_7
+  - first:
+      213: -1791215373677357190
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_8
+  - first:
+      213: 5815897382487641618
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_9
+  - first:
+      213: 1738112662112609456
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_10
+  - first:
+      213: 3269751526690924249
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_11
+  - first:
+      213: -3311335128396095523
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_12
+  - first:
+      213: 6620255738633592512
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_13
+  - first:
+      213: -1442502363855699964
+    second: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_14
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 225
+        height: 225
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d598cbad3f3e59820800000000000000
+      internalID: 2924494169533352285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 165
+        width: 33
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 359d691ecdd80a8e0800000000000000
+      internalID: -1684190280819484333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_2
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 180
+        width: 23
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c72b360854e2bccc0800000000000000
+      internalID: -3689804593658350980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_3
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 106
+        width: 108
+        height: 111
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8de4d4e87b9b97940800000000000000
+      internalID: 5294467034968313560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_4
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 174
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68eb167d3a55758c0800000000000000
+      internalID: -4010642780968599930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_5
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 129
+        width: 18
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3215169d168262cb0800000000000000
+      internalID: -4889175944740122333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_6
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 127
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1695ca2682aad7e0800000000000000
+      internalID: -1739899608898365923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_7
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 101
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b7bf25ea3a5e9630800000000000000
+      internalID: 3935682333368104885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_8
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 75
+        width: 51
+        height: 49
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a771ebf9b135427e0800000000000000
+      internalID: -1791215373677357190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_9
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 64
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21ecc4dfad736b050800000000000000
+      internalID: 5815897382487641618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_10
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 44
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b4a4dcd1440f1810800000000000000
+      internalID: 1738112662112609456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_11
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 5
+        width: 18
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d6243c80bd706d20800000000000000
+      internalID: 3269751526690924249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_12
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 22
+        width: 16
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddf9da3be36cb02d0800000000000000
+      internalID: -3311335128396095523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_13
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 27
+        width: 15
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ce1f77c48fdfdb50800000000000000
+      internalID: 6620255738633592512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_14
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 2
+        width: 63
+        height: 52
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40048b62eb33bfbe0800000000000000
+      internalID: -1442502363855699964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5874cc8f29ebfd84180cbaf7ed46f0e8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_0: 2924494169533352285
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_1: -1684190280819484333
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_10: 1738112662112609456
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_11: 3269751526690924249
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_12: -3311335128396095523
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_13: 6620255738633592512
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_14: -1442502363855699964
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_2: -3689804593658350980
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_3: 5294467034968313560
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_4: -4010642780968599930
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_5: -4889175944740122333
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_6: -1739899608898365923
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_7: 3935682333368104885
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_8: -1791215373677357190
+      round-loading-circle-white-icon-png-701751694961588wkxpkbd82p_9: 5815897382487641618
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

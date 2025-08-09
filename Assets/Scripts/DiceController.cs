@@ -11,7 +11,7 @@ public class DiceController : MonoBehaviour
     public Sprite[] diceFaces; // 6 sprites for 1-6 faces (ordered)
 
     [Space(15)]
-    public bool getDiceNumManually;
+    public bool getDiceNumManually; // chech YES if want to select num manually
     public int rolledNumber = 0; // To be used by PlayerController
 
     private bool isRolling = false;
