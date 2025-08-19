@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
+using System.Scripts;
+using static System.Scripts.GameManager;
 
 public class PieceController : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class PieceController : MonoBehaviour
     public PlayerController playerController;
 
     [Space(15)]
-    public TurnSystem.Player pieceOwner;
+    public Player pieceOwner;
     public bool hasReachedHome = false;
 
     private int currentTileIndex = -1; // -1 = not on board yet
@@ -45,7 +46,7 @@ public class PieceController : MonoBehaviour
         }
 
         // Get correct path based on piece color
-        var path = pieceOwner == TurnSystem.Player.Green ? BoardHandler.Instance.greenPathPoints : BoardHandler.Instance.bluePathPoints;
+        var path = pieceOwner == Player.Green ? BoardHandler.Instance.greenPathPoints : BoardHandler.Instance.bluePathPoints;
 
         StartCoroutine(MoveAlongPath(path, steps));
     }
@@ -78,7 +79,7 @@ public class PieceController : MonoBehaviour
                 Debug.Log($"{name} has reached home.");
                 hasReachedHome = true;
 
-                GameObject[] pieces = GameManager.Instance.currentPlayer == TurnSystem.Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+                GameObject[] pieces = GameManager.Instance.currentPlayer == Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
                 GameManager.Instance.GetCurrentPlayer().CheckWinCondition(pieces);
                 TurnSystem.Instance.StartTurn(GameManager.Instance.currentPlayer); // Extra turn
 
@@ -126,7 +127,7 @@ Skip:
         // Send captured piece to its respective base
 
         currentTileIndex = -1;
-        TurnSystem.Player player=(pieceOwner==TurnSystem.Player.Green)? TurnSystem.Player.Green : TurnSystem.Player.Blue;
+        Player player=(pieceOwner==Player.Green)? Player.Green : Player.Blue;
 
         BoardHandler.Instance.PlacePiecesAtStart(this.gameObject, player);
         UpdateTile(null);

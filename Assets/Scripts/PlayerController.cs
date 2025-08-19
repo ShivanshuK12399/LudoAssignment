@@ -1,6 +1,6 @@
-using NUnit.Framework;
 using UnityEngine;
-using static PieceController;
+using System.Scripts;
+using static System.Scripts.GameManager;
 
 public class PlayerController : MonoBehaviour
 {
@@ -8,8 +8,9 @@ public class PlayerController : MonoBehaviour
     public int homeCount = 0;
 
     [Header("Components")]
+    public GameObject piecePrefab;
     public GameObject selectedPiece;
-    public TurnSystem.Player player;
+    public Player player;
 
 
     // select token from click
@@ -64,7 +65,7 @@ public class PlayerController : MonoBehaviour
 
     public bool HasValidMove(int steps)
     {
-        GameObject[] pieces= GameManager.Instance.currentPlayer == TurnSystem.Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+        GameObject[] pieces= GameManager.Instance.currentPlayer == Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
         
         foreach (var token in pieces)
         {
@@ -83,7 +84,7 @@ public class PlayerController : MonoBehaviour
                 homeCount++;
         }
 
-        if (homeCount >= 2) // 2 in num of pieces in game
+        if (homeCount >= GameManager.Instance.numberOfPiecesPerPlayer) // number of pieces per player in game
         {
             GameManager.Instance.PlayerWon(GameManager.Instance.currentPlayer);
         }

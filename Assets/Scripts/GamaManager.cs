@@ -1,107 +1,116 @@
 using System;
 using UnityEngine;
-using static PieceController;
 
-public class GameManager : MonoBehaviour
+namespace System.Scripts
 {
-    public static GameManager Instance;
-    public event System.Action<TurnSystem.Player> OnPlayerWon;
-    //public event Action OnMatchRestarted;
-
-    public PlayerController greenPlayerController;
-    public PlayerController bluePlayerController;
-    public TurnSystem.Player currentPlayer;
-    public bool gameEnded = false;
-
-    private PlayerController[] allPlayers;
-
-    void Awake()
+    public class GameManager : MonoBehaviour
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-    }
+        public static GameManager Instance;
+        public event System.Action<Player> OnPlayerWon;
+        public enum Player { Green, Blue }
+        //public event Action OnMatchRestarted;
 
-    void Start()
-    {
-        // Assign owners to pieces
-        AssignTokenOwners();
-        allPlayers = new PlayerController[] { greenPlayerController, bluePlayerController };
+        [Header("Components")]
+        public PlayerController greenPlayerController;
+        public PlayerController bluePlayerController;
+        public Player currentPlayer;
 
-        // Start the game with the first turn
-        StartTurn(TurnSystem.Player.Green);
-    }
+        [Space(15)]
+        public int numberOfPlayers = 2; // Currently only supports 2 players
+        public int numberOfPiecesPerPlayer = 2; // Number of pieces per player
+        public bool gameEnded = false;
 
-    void AssignTokenOwners()
-    {
-        foreach (GameObject token in BoardHandler.Instance.greenPieces)
+        private PlayerController[] allPlayers;
+
+        void Awake()
         {
-            PieceController piece = token.GetComponent<PieceController>();
-            piece.playerController = greenPlayerController;
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
         }
-        foreach (GameObject token in BoardHandler.Instance.bluePieces)
+
+        void Start()
         {
-            PieceController piece = token.GetComponent<PieceController>();
-            piece.playerController = bluePlayerController;
+            // Assign owners to pieces
+            AssignTokenOwners();
+            allPlayers = new PlayerController[] { greenPlayerController, bluePlayerController };
+
+            // Start the game with the first turn
+            StartTurn(Player.Green);
         }
-    }
 
-    public void StartTurn(TurnSystem.Player player)
-    {
-        //print($"Current player: {player}");
-        currentPlayer = player;
-        UpdatePiecesZ();
-        TurnSystem.Instance.StartTurn(player);
-    }
-
-    public void SwitchTurn()
-    {
-        currentPlayer = (currentPlayer == TurnSystem.Player.Green)? TurnSystem.Player.Blue : TurnSystem.Player.Green;
-        StartTurn(currentPlayer);
-    }
-
-    public PlayerController GetCurrentPlayer()
-    {
-        return currentPlayer == TurnSystem.Player.Green ? greenPlayerController : bluePlayerController;
-    }
-
-    public bool DoesPieceBelongToCurrentPlayer(PieceController piece)
-    {
-        return (currentPlayer == TurnSystem.Player.Green && piece.pieceOwner == TurnSystem.Player.Green)
-            || (currentPlayer == TurnSystem.Player.Blue && piece.pieceOwner == TurnSystem.Player.Blue);
-    }
-
-    public void PlayerWon(TurnSystem.Player player)
-    {
-        Debug.Log($"Player {player} wins!");
-        OnPlayerWon?.Invoke(player);
-
-        // Stop game or show win screen later
-        gameEnded = true;
-        TurnSystem.Instance.dice.SetDiceInteractive(false);
-    }
-
-    public void UpdatePiecesZ() // Update Z position of pieces based on current player
-    {
-        foreach (var player in allPlayers) // allPlayers is a list of PlayerControllers
+        void AssignTokenOwners()
         {
-            bool isCurrent = (player == GetCurrentPlayer());
-            var pieces = (player.player==TurnSystem.Player.Green)? BoardHandler.Instance.greenPieces:BoardHandler.Instance.bluePieces;
-
-            foreach (var piece in pieces)
+            foreach (GameObject token in BoardHandler.Instance.greenPieces)
             {
-                piece.GetComponent<PieceController>().SetPieceZ(isCurrent);
+                PieceController piece = token.GetComponent<PieceController>();
+                piece.playerController = greenPlayerController;
+            }
+            foreach (GameObject token in BoardHandler.Instance.bluePieces)
+            {
+                PieceController piece = token.GetComponent<PieceController>();
+                piece.playerController = bluePlayerController;
             }
         }
+
+        public void StartTurn(Player player)
+        {
+            //print($"Current player: {player}");
+            currentPlayer = player;
+            UpdatePiecesZ();
+            TurnSystem.Instance.StartTurn(player);
+        }
+
+        public void SwitchTurn()
+        {
+            currentPlayer = (currentPlayer == Player.Green) ? Player.Blue : Player.Green;
+            StartTurn(currentPlayer);
+        }
+
+        public PlayerController GetCurrentPlayer()
+        {
+            return currentPlayer == Player.Green ? greenPlayerController : bluePlayerController;
+        }
+
+        public bool DoesPieceBelongToCurrentPlayer(PieceController piece)
+        {
+            return (currentPlayer == Player.Green && piece.pieceOwner == Player.Green)
+                || (currentPlayer == Player.Blue && piece.pieceOwner == Player.Blue);
+        }
+
+        public void PlayerWon(Player player)
+        {
+            Debug.Log($"Player {player} wins!");
+            OnPlayerWon?.Invoke(player);
+
+            // Stop game or show win screen later
+            gameEnded = true;
+            TurnSystem.Instance.dice.SetDiceInteractive(false);
+        }
+
+        public void UpdatePiecesZ() // Update Z position of pieces based on current player
+        {
+            foreach (var player in allPlayers) // allPlayers is a list of PlayerControllers
+            {
+                bool isCurrent = (player == GetCurrentPlayer());
+                var pieces = (player.player == Player.Green) ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+
+                foreach (var piece in pieces)
+                {
+                    piece.GetComponent<PieceController>().SetPieceZ(isCurrent);
+                }
+            }
+        }
+
+        public void RestartMatch() // for future updates...
+        {
+            gameEnded = false;
+
+            // BoardHandler.Instance.ResetBoard();
+            // TurnSystem.Instance.ResetTurns();
+            // TurnSystem.Instance.dice.SetDiceInteractive(false);
+            // OnMatchRestarted?.Invoke();
+        }
+
     }
-
-    public void RestartMatch() // for future updates...
-    {
-        gameEnded = false;
-
-        // BoardHandler.Instance.ResetBoard();
-        // TurnSystem.Instance.ResetTurns();
-        // TurnSystem.Instance.dice.SetDiceInteractive(false);
-        // OnMatchRestarted?.Invoke();
-    }
-
 }
+

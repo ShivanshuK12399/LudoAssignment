@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Scripts;
+using static System.Scripts.GameManager;
 
 public class GameSceneUI : MonoBehaviour
 {
@@ -29,7 +31,7 @@ public class GameSceneUI : MonoBehaviour
         }
     }
 
-    void ShowWinScreen(TurnSystem.Player winner)
+    void ShowWinScreen(GameManager.Player winner)
     {
         winText.text = $"{winner} Player Wins!";
         winScreen.SetActive(true);

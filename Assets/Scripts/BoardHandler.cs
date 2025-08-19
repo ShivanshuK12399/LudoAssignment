@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Scripts;
+using static System.Scripts.GameManager;
 
 public class BoardHandler : MonoBehaviour
 {
@@ -18,7 +20,7 @@ public class BoardHandler : MonoBehaviour
     [Header("Pieces")]
     public GameObject[] greenPieces;
     public GameObject[] bluePieces;
-    public List<PieceController> allPieces; // active pieces
+    private List<PieceController> allPieces=new List<PieceController>(); // active pieces
 
 
     [Space(15)]
@@ -38,21 +40,36 @@ public class BoardHandler : MonoBehaviour
 
     void Start()
     {
-        // Setting pieces intitial location
+        // Setting array size for pieces
+        greenPieces = new GameObject[GameManager.Instance.numberOfPiecesPerPlayer];
+        bluePieces = new GameObject[GameManager.Instance.numberOfPiecesPerPlayer];
+        for (int i = 0; i < GameManager.Instance.numberOfPiecesPerPlayer; i++)
+        {
+            greenPieces[i]= Instantiate(GameManager.Instance.greenPlayerController.piecePrefab);
+            bluePieces[i] = Instantiate(GameManager.Instance.bluePlayerController.piecePrefab);
+        }
 
+        PieceController[] piecesFound = FindObjectsByType<PieceController>(FindObjectsSortMode.InstanceID);
+        foreach (var token in piecesFound)
+        {
+            allPieces.Add(token);
+        }
+
+
+        // Setting pieces intitial location
         foreach (GameObject token in greenPieces)
-            PlacePiecesAtStart(token, TurnSystem.Player.Green);
+            PlacePiecesAtStart(token, Player.Green);
 
         foreach (GameObject token in bluePieces)
-            PlacePiecesAtStart(token, TurnSystem.Player.Blue);
+            PlacePiecesAtStart(token, Player.Blue);
     }
 
-    public void PlacePiecesAtStart(GameObject token,TurnSystem.Player player)
+    public void PlacePiecesAtStart(GameObject token,Player player)
     {
         // Sets pieces to its start location
 
-        List<Transform>initialPoints = (player == TurnSystem.Player.Green) ? initialGreenPoints : initialBluePoints;
-        GameObject[] pieces = (player == TurnSystem.Player.Green) ? greenPieces : bluePieces;
+        List<Transform>initialPoints = (player == Player.Green) ? initialGreenPoints : initialBluePoints;
+        GameObject[] pieces = (player == Player.Green) ? greenPieces : bluePieces;
 
         token.transform.position = initialPoints[System.Array.IndexOf(pieces, token)].position;
     }

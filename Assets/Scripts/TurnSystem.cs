@@ -1,5 +1,7 @@
 ﻿using System;
 using UnityEngine;
+using System.Scripts;
+using static System.Scripts.GameManager;
 
 public class TurnSystem : MonoBehaviour
 {
@@ -13,10 +15,10 @@ public class TurnSystem : MonoBehaviour
     [SerializeField] private Transform greenDiceHolder;
     [SerializeField] private Transform blueDiceHolder;
 
-    public enum Player { Green, Blue }
-    public event Action<TurnSystem.Player> OnTurnChanged;
+    public event Action<Player> OnTurnChanged;
     public bool rolledSix = false;
     public bool hasMovedAfterSix = false;
+
 
     void Awake()
     {
