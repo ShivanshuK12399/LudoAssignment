@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
         {
             if (TurnSystem.Instance.rolledSix)
             {
-                TurnSystem.Instance.StartTurn(GameManager.Instance.currentPlayer); // Extra turn
+                TurnSystem.Instance.StartTurn(Instance.currentPlayer); // Extra turn
             }
             else
             {
@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour
 
     public bool HasValidMove(int steps)
     {
-        GameObject[] pieces= GameManager.Instance.currentPlayer == Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+        GameObject[] pieces= Instance.currentPlayer == Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
         
         foreach (var token in pieces)
         {
@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
         if (homeCount >= GameManager.Instance.numberOfPiecesPerPlayer) // number of pieces per player in game
         {
-            GameManager.Instance.PlayerWon(GameManager.Instance.currentPlayer);
+            GameManager.Instance.PlayerWon(Instance.currentPlayer);
         }
     }
 }

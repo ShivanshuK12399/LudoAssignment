@@ -19,12 +19,16 @@ public class PieceController : MonoBehaviour
     private int currentTileIndex = -1; // -1 = not on board yet
     private float moveSpeed = 6f;
 
+    private void Start()
+    {
+        playerController = (pieceOwner==Player.Green) ? Instance.greenPlayerController: Instance.bluePlayerController;
+    }
 
     void OnMouseDown()
     {
         if (playerController != null)
         {
-            playerController = GameManager.Instance.GetCurrentPlayer();
+            playerController = Instance.GetCurrentPlayer();
             playerController.SelectPiece(gameObject);
         }
     }
@@ -79,9 +83,9 @@ public class PieceController : MonoBehaviour
                 Debug.Log($"{name} has reached home.");
                 hasReachedHome = true;
 
-                GameObject[] pieces = GameManager.Instance.currentPlayer == Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
-                GameManager.Instance.GetCurrentPlayer().CheckWinCondition(pieces);
-                TurnSystem.Instance.StartTurn(GameManager.Instance.currentPlayer); // Extra turn
+                GameObject[] pieces = Instance.currentPlayer == Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+                Instance.GetCurrentPlayer().CheckWinCondition(pieces);
+                TurnSystem.Instance.StartTurn(Instance.currentPlayer); // Extra turn
 
                 goto Skip;  // skipping updates(like TurnChange, DiceChange) on piece reaching home
             }
@@ -118,7 +122,7 @@ Skip:
             }
             print("Captured opponent");
             //print($"Player switched from {this}");
-            GameManager.Instance.SwitchTurn();
+            Instance.SwitchTurn();
         }
     }
 

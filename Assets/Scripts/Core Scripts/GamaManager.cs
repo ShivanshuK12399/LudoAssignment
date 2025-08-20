@@ -1,9 +1,10 @@
-using System;
 using UnityEngine;
+using Unity.Netcode;
+
 
 namespace System.Scripts
 {
-    public class GameManager : MonoBehaviour
+    public class GameManager : NetworkBehaviour
     {
         public static GameManager Instance;
         public event System.Action<Player> OnPlayerWon;
@@ -30,31 +31,15 @@ namespace System.Scripts
 
         void Start()
         {
-            // Assign owners to pieces
-            AssignTokenOwners();
             allPlayers = new PlayerController[] { greenPlayerController, bluePlayerController };
 
             // Start the game with the first turn
             StartTurn(Player.Green);
         }
 
-        void AssignTokenOwners()
-        {
-            foreach (GameObject token in BoardHandler.Instance.greenPieces)
-            {
-                PieceController piece = token.GetComponent<PieceController>();
-                piece.playerController = greenPlayerController;
-            }
-            foreach (GameObject token in BoardHandler.Instance.bluePieces)
-            {
-                PieceController piece = token.GetComponent<PieceController>();
-                piece.playerController = bluePlayerController;
-            }
-        }
-
         public void StartTurn(Player player)
         {
-            //print($"Current player: {player}");
+            print($"Current player: {player}");
             currentPlayer = player;
             UpdatePiecesZ();
             TurnSystem.Instance.StartTurn(player);

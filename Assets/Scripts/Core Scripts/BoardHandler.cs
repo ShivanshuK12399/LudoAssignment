@@ -1,9 +1,11 @@
-using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using System.Scripts;
+using Unity.Netcode;
+using UnityEngine;
 using static System.Scripts.GameManager;
 
-public class BoardHandler : MonoBehaviour
+public class BoardHandler : NetworkBehaviour
 {
     public static BoardHandler Instance { get; private set; }
 
@@ -20,7 +22,7 @@ public class BoardHandler : MonoBehaviour
     [Header("Pieces")]
     public GameObject[] greenPieces;
     public GameObject[] bluePieces;
-    private List<PieceController> allPieces=new List<PieceController>(); // active pieces
+    public List<PieceController> allPieces=new List<PieceController>(); // active pieces
 
 
     [Space(15)]
@@ -38,15 +40,22 @@ public class BoardHandler : MonoBehaviour
     }
 
 
-    void Start()
+    public void PrepareBoard()
     {
-        // Setting array size for pieces
+        if (!IsHost) return;
+
+        // declaring array size
         greenPieces = new GameObject[GameManager.Instance.numberOfPiecesPerPlayer];
         bluePieces = new GameObject[GameManager.Instance.numberOfPiecesPerPlayer];
+
+        // creating pieces at initial points in network
         for (int i = 0; i < GameManager.Instance.numberOfPiecesPerPlayer; i++)
         {
-            greenPieces[i]= Instantiate(GameManager.Instance.greenPlayerController.piecePrefab);
-            bluePieces[i] = Instantiate(GameManager.Instance.bluePlayerController.piecePrefab);
+            greenPieces[i]= Instantiate(GameManager.Instance.greenPlayerController.piecePrefab, initialGreenPoints[i].position,Quaternion.identity);
+            greenPieces[i].GetComponent<NetworkObject>().Spawn(true);
+
+            bluePieces[i] = Instantiate(GameManager.Instance.bluePlayerController.piecePrefab, initialBluePoints[i].position, Quaternion.identity);
+            bluePieces[i].GetComponent<NetworkObject>().Spawn(true);
         }
 
         PieceController[] piecesFound = FindObjectsByType<PieceController>(FindObjectsSortMode.InstanceID);
@@ -55,13 +64,32 @@ public class BoardHandler : MonoBehaviour
             allPieces.Add(token);
         }
 
+        // collect IDs so clients can re-link objects
+        ulong[] greenIds = greenPieces.Select(p => p.GetComponent<NetworkObject>().NetworkObjectId).ToArray();
+        ulong[] blueIds = bluePieces.Select(p => p.GetComponent<NetworkObject>().NetworkObjectId).ToArray();
+        ulong[] allIds = allPieces.Select(p => p.GetComponent<NetworkObject>().NetworkObjectId).ToArray();
 
-        // Setting pieces intitial location
-        foreach (GameObject token in greenPieces)
-            PlacePiecesAtStart(token, Player.Green);
+        // sync with all clients
+        SyncPiecesClientRpc(greenIds, blueIds, allIds);
+    }
 
-        foreach (GameObject token in bluePieces)
-            PlacePiecesAtStart(token, Player.Blue);
+    [ClientRpc]
+    private void SyncPiecesClientRpc(ulong[] greenIds, ulong[] blueIds, ulong[] allIds)
+    {
+        if (IsHost) return;
+
+        print("Client Syncing Pieces...");
+        // rebuild arrays for every client
+        greenPieces = greenIds.Select(id => NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].gameObject).ToArray();
+        bluePieces = blueIds.Select(id => NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].gameObject).ToArray();
+
+        // rebuild allPieces list
+        allPieces.Clear();
+        foreach (var id in allIds)
+        {
+            var go = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].gameObject;
+            allPieces.Add(go.GetComponent<PieceController>());
+        }
     }
 
     public void PlacePiecesAtStart(GameObject token,Player player)

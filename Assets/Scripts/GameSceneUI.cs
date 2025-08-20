@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Unity.Netcode;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
@@ -7,6 +8,11 @@ using static System.Scripts.GameManager;
 
 public class GameSceneUI : MonoBehaviour
 {
+    [Header("Network UI")]
+    public GameObject networkPanel;
+    public Button HostBtn;
+    public Button ClientBtn;
+
     [Header("Win Screen")]
     public GameObject winScreen;
     public TMP_Text winText, paidMatchText;
@@ -23,12 +29,25 @@ public class GameSceneUI : MonoBehaviour
             SceneManager.LoadScene("MainMenu");
         });
 
-        GameManager.Instance.OnPlayerWon += ShowWinScreen;
+        HostBtn.onClick.AddListener(() =>
+        {
+            NetworkManager.Singleton.StartHost();
+            networkPanel.SetActive(false);
+        });
+
+        ClientBtn.onClick.AddListener(() =>
+        {
+            NetworkManager.Singleton.StartClient();
+            networkPanel.SetActive(false);
+        });
+
 
         if (DataManager.Instance!=null) // checking game mode 
         {
             GameMode(DataManager.Instance.gameMode);
         }
+
+        Instance.OnPlayerWon += ShowWinScreen;
     }
 
     void ShowWinScreen(GameManager.Player winner)

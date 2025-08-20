@@ -1,6 +1,7 @@
 ﻿using System;
-using UnityEngine;
 using System.Scripts;
+using Unity.Netcode;
+using UnityEngine;
 using static System.Scripts.GameManager;
 
 public class TurnSystem : MonoBehaviour
@@ -61,7 +62,7 @@ public class TurnSystem : MonoBehaviour
     void SwitchTurn()
     {
         //print($"Player switched from {this}");
-        GameManager.Instance.SwitchTurn(); 
+        GameManager.Instance.SwitchTurn();
     }
 
     public void OnPieceMoved() 
