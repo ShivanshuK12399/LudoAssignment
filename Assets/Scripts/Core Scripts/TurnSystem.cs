@@ -16,7 +16,7 @@ public class TurnSystem : MonoBehaviour
     [SerializeField] private Transform greenDiceHolder;
     [SerializeField] private Transform blueDiceHolder;
 
-    public event Action<Player> OnTurnChanged;
+    public event Action<PlayerType> OnTurnChanged;
     public bool rolledSix = false;
     public bool hasMovedAfterSix = false;
 
@@ -27,7 +27,7 @@ public class TurnSystem : MonoBehaviour
     }
 
 
-    public void StartTurn(Player player)
+    public void StartTurn(PlayerType player)
     {
         dice.rolledNumber = GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
         rolledSix = false;
@@ -81,11 +81,11 @@ public class TurnSystem : MonoBehaviour
         }
     }
 
-    private void MoveDiceToPlayer(Player player) 
+    private void MoveDiceToPlayer(PlayerType player) 
     {
         // Moves dice parent to current payer
 
-        Transform holder = (player == Player.Green) ? greenDiceHolder : blueDiceHolder;
+        Transform holder = (player == PlayerType.Green) ? greenDiceHolder : blueDiceHolder;
         dice.transform.SetParent(holder);
         dice.transform.localPosition = new Vector3(0, 0, -0.5f);
     }

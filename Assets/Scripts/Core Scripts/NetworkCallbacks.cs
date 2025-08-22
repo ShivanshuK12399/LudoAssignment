@@ -1,4 +1,6 @@
-﻿using Unity.Netcode;
+﻿using System.Runtime.CompilerServices;
+using System.Scripts;
+using Unity.Netcode;
 using UnityEngine;
 
 public class NetworkCallbacks : MonoBehaviour
@@ -29,10 +31,11 @@ public class NetworkCallbacks : MonoBehaviour
     {
         Debug.Log($"🔗 Client {clientId} connected.");
 
-        if (NetworkManager.Singleton.ConnectedClients.Count == 2)
+        if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.ConnectedClients.Count == 2)
         {
             Debug.Log("2 players connected, Preparing Board...");
             BoardHandler.Instance.PrepareBoard();
+            //GameManager.Instance.StartTurnClientRpc(GameManager.PlayerType.Green);
         }
     }
 

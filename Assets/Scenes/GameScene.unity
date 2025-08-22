@@ -560,6 +560,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5453308429208570704, guid: f09187d536cba174c8044e3d5a0e4039, type: 3}
   m_PrefabInstance: {fileID: 1871795786}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &180575803
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 180575804}
+  m_Layer: 0
+  m_Name: Players
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &180575804
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 180575803}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &186008282
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1122,7 +1153,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 358339012}
-  - component: {fileID: 358339013}
   m_Layer: 0
   m_Name: GreenHome
   m_TagString: Untagged
@@ -1150,23 +1180,6 @@ Transform:
   - {fileID: 827716669}
   m_Father: {fileID: 682049684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &358339013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358339011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe455388c36091c40a1e957718ab27bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stepsToMove: 0
-  homeCount: 0
-  piecePrefab: {fileID: 2523035361723819028, guid: 50e9f30cbfe94cb4abaa8732ac80b2cc, type: 3}
-  selectedPiece: {fileID: 0}
-  player: 0
 --- !u!1001 &501901697
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2222,9 +2235,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 881489155}
-  - component: {fileID: 881489156}
   m_Layer: 0
-  m_Name: BlueHome (1)
+  m_Name: BlueHome
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2250,23 +2262,6 @@ Transform:
   - {fileID: 1283317537}
   m_Father: {fileID: 682049684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &881489156
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 881489154}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe455388c36091c40a1e957718ab27bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stepsToMove: 0
-  homeCount: 0
-  piecePrefab: {fileID: 261180896893315716, guid: 1f2547b382f44d140957624714af64f1, type: 3}
-  selectedPiece: {fileID: 0}
-  player: 1
 --- !u!1001 &906337859
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3065,10 +3060,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  greenPlayerController: {fileID: 358339013}
-  bluePlayerController: {fileID: 881489156}
-  currentPlayer:
-    m_InternalValue: 0
+  greenPlayerController: {fileID: 0}
+  bluePlayerController: {fileID: 0}
+  currentPlayer: 0
   numberOfPlayers: 2
   numberOfPiecesPerPlayer: 2
   gameEnded: 0
@@ -3494,7 +3488,7 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1155279921}
-    PlayerPrefab: {fileID: 0}
+    PlayerPrefab: {fileID: 1203982340031737902, guid: 19700b1d10a746545b533e8f3a097522, type: 3}
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: 85a235f60a7b27a458dc3d9500d08665, type: 2}
@@ -4375,7 +4369,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1487513550
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6456,6 +6450,7 @@ SceneRoots:
   - {fileID: 1080178700}
   - {fileID: 1008910790}
   - {fileID: 682049684}
+  - {fileID: 180575804}
   - {fileID: 1829289640}
   - {fileID: 1025392766}
   - {fileID: 1642074924}

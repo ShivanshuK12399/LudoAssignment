@@ -23,6 +23,7 @@ public class GameSceneUI : MonoBehaviour
 
     void Start()
     {
+        networkPanel.SetActive(true);
         // hook main menu button
         mainMenuBtn.onClick.AddListener(() =>
         {
@@ -50,7 +51,7 @@ public class GameSceneUI : MonoBehaviour
         Instance.OnPlayerWon += ShowWinScreen;
     }
 
-    void ShowWinScreen(GameManager.Player winner)
+    void ShowWinScreen(GameManager.PlayerType winner)
     {
         winText.text = $"{winner} Player Wins!";
         winScreen.SetActive(true);

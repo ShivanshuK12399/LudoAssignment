@@ -7,14 +7,14 @@ namespace System.Scripts
     public class GameManager : NetworkBehaviour
     {
         public static GameManager Instance;
-        public event System.Action<Player> OnPlayerWon;
-        public enum Player { Green, Blue }
+        public event System.Action<PlayerType> OnPlayerWon;
+        public enum PlayerType { Green, Blue }
         //public event Action OnMatchRestarted;
 
         [Header("Components")]
         public PlayerController greenPlayerController;
         public PlayerController bluePlayerController;
-        public Player currentPlayer;
+        public PlayerType currentPlayer;
 
         [Space(15)]
         public int numberOfPlayers = 2; // Currently only supports 2 players
@@ -32,37 +32,43 @@ namespace System.Scripts
         void Start()
         {
             allPlayers = new PlayerController[] { greenPlayerController, bluePlayerController };
-
-            // Start the game with the first turn
-            StartTurn(Player.Green);
         }
 
-        public void StartTurn(Player player)
+        [ClientRpc]
+        public void StartTurnClientRpc(PlayerType player)
         {
-            print($"Current player: {player}");
+            //print($"Current player: {player}");
             currentPlayer = player;
             UpdatePiecesZ();
             TurnSystem.Instance.StartTurn(player);
         }
 
+        public void RegisterPlayerController(PlayerController pc)
+        {
+            if (pc.playerType == PlayerType.Green)
+                greenPlayerController = pc;
+            else if (pc.playerType == PlayerType.Blue)
+                bluePlayerController = pc;
+        }
+
         public void SwitchTurn()
         {
-            currentPlayer = (currentPlayer == Player.Green) ? Player.Blue : Player.Green;
-            StartTurn(currentPlayer);
+            currentPlayer = (currentPlayer == PlayerType.Green) ? PlayerType.Blue : PlayerType.Green;
+            StartTurnClientRpc(currentPlayer);
         }
 
         public PlayerController GetCurrentPlayer()
         {
-            return currentPlayer == Player.Green ? greenPlayerController : bluePlayerController;
+            return currentPlayer == PlayerType.Green ? greenPlayerController : bluePlayerController;
         }
 
         public bool DoesPieceBelongToCurrentPlayer(PieceController piece)
         {
-            return (currentPlayer == Player.Green && piece.pieceOwner == Player.Green)
-                || (currentPlayer == Player.Blue && piece.pieceOwner == Player.Blue);
+            return (currentPlayer == PlayerType.Green && piece.pieceOwner == PlayerType.Green)
+                || (currentPlayer == PlayerType.Blue && piece.pieceOwner == PlayerType.Blue);
         }
 
-        public void PlayerWon(Player player)
+        public void PlayerWon(PlayerType player)
         {
             Debug.Log($"Player {player} wins!");
             OnPlayerWon?.Invoke(player);
@@ -77,7 +83,7 @@ namespace System.Scripts
             foreach (var player in allPlayers) // allPlayers is a list of PlayerControllers
             {
                 bool isCurrent = (player == GetCurrentPlayer());
-                var pieces = (player.player == Player.Green) ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+                var pieces = (player.playerType == PlayerType.Green) ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
 
                 foreach (var piece in pieces)
                 {

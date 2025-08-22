@@ -13,7 +13,7 @@ public class PieceController : MonoBehaviour
     public PlayerController playerController;
 
     [Space(15)]
-    public Player pieceOwner;
+    public PlayerType pieceOwner;
     public bool hasReachedHome = false;
 
     private int currentTileIndex = -1; // -1 = not on board yet
@@ -21,7 +21,7 @@ public class PieceController : MonoBehaviour
 
     private void Start()
     {
-        playerController = (pieceOwner==Player.Green) ? Instance.greenPlayerController: Instance.bluePlayerController;
+        playerController = (pieceOwner==PlayerType.Green) ? Instance.greenPlayerController: Instance.bluePlayerController;
     }
 
     void OnMouseDown()
@@ -50,7 +50,7 @@ public class PieceController : MonoBehaviour
         }
 
         // Get correct path based on piece color
-        var path = pieceOwner == Player.Green ? BoardHandler.Instance.greenPathPoints : BoardHandler.Instance.bluePathPoints;
+        var path = pieceOwner == PlayerType.Green ? BoardHandler.Instance.greenPathPoints : BoardHandler.Instance.bluePathPoints;
 
         StartCoroutine(MoveAlongPath(path, steps));
     }
@@ -83,7 +83,7 @@ public class PieceController : MonoBehaviour
                 Debug.Log($"{name} has reached home.");
                 hasReachedHome = true;
 
-                GameObject[] pieces = Instance.currentPlayer == Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+                GameObject[] pieces = Instance.currentPlayer == PlayerType.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
                 Instance.GetCurrentPlayer().CheckWinCondition(pieces);
                 TurnSystem.Instance.StartTurn(Instance.currentPlayer); // Extra turn
 
@@ -131,7 +131,7 @@ Skip:
         // Send captured piece to its respective base
 
         currentTileIndex = -1;
-        Player player=(pieceOwner==Player.Green)? Player.Green : Player.Blue;
+        PlayerType player=(pieceOwner==PlayerType.Green)? PlayerType.Green : PlayerType.Blue;
 
         BoardHandler.Instance.PlacePiecesAtStart(this.gameObject, player);
         UpdateTile(null);

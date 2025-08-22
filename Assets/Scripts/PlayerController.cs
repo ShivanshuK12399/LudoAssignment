@@ -1,17 +1,65 @@
-using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 using System.Scripts;
+using Unity.Netcode;
+using UnityEditor.U2D.Aseprite;
+using UnityEngine;
 using static System.Scripts.GameManager;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     public int stepsToMove = 0;
     public int homeCount = 0;
 
     [Header("Components")]
-    public GameObject piecePrefab;
+    public PlayerType playerType;
     public GameObject selectedPiece;
-    public Player player;
+    public GameObject piecePrefab;
+    [SerializeField] private List<GameObject> myPieces = new List<GameObject>();
 
+    [System.Serializable]
+    public class PlayerSetup
+    {
+        public PlayerType type;
+        public GameObject piecePrefab;
+    }
+    public List<PlayerSetup> playerSetups;
+
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsHost) // this works for host
+        {
+            if (OwnerClientId == NetworkManager.Singleton.LocalClientId)
+                playerType = PlayerType.Green;
+            else
+                playerType = PlayerType.Blue;
+        }
+        else if (IsOwner) // this works for client
+        {
+            if (NetworkManager.ServerClientId == NetworkManager.Singleton.LocalClientId)
+                playerType = PlayerType.Green;
+            else
+                playerType = PlayerType.Blue;
+        }
+
+        // Find setup entry for this playerType
+        var setup = playerSetups.First(s => s.type == playerType);
+        piecePrefab = setup.piecePrefab;
+
+        Debug.Log($"{playerType} Player spawned.");
+
+        GameManager.Instance.RegisterPlayerController(this);
+    }
+
+    public void SetMyPieces(GameObject[] pieces)
+    {
+        myPieces.Clear();
+        myPieces.AddRange(pieces);
+        Debug.Log($"{playerType} received {myPieces.Count} pieces");
+    }
+
+    public List<GameObject> GetMyPieces() => myPieces;
 
     // select token from click
     public void SelectPiece(GameObject token)
@@ -65,7 +113,7 @@ public class PlayerController : MonoBehaviour
 
     public bool HasValidMove(int steps)
     {
-        GameObject[] pieces= Instance.currentPlayer == Player.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+        GameObject[] pieces= Instance.currentPlayer == PlayerType.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
         
         foreach (var token in pieces)
         {
@@ -84,9 +132,9 @@ public class PlayerController : MonoBehaviour
                 homeCount++;
         }
 
-        if (homeCount >= GameManager.Instance.numberOfPiecesPerPlayer) // number of pieces per player in game
+        if (homeCount >= Instance.numberOfPiecesPerPlayer) // number of pieces per player in game
         {
-            GameManager.Instance.PlayerWon(Instance.currentPlayer);
+            Instance.PlayerWon(Instance.currentPlayer);
         }
     }
 }
