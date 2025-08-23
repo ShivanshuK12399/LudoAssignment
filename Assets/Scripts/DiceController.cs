@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 ﻿using System.Scripts;
-using UnityEngine.UI; // If using UI Button (optional)
+using UnityEngine.UI;
+using Unity.Netcode;
+using System.Collections; // If using UI Button (optional)
 
-public class DiceController : MonoBehaviour
+public class DiceController : NetworkBehaviour
 {
     [Header("Components")]
     public SpriteRenderer diceRenderer; // Drag your dice sprite object here
@@ -28,31 +30,40 @@ public class DiceController : MonoBehaviour
 
         if (!isRolling && canRoll)
         {
-            RollDice();
-            animator.enabled = true;
+            RollDiceServerRpc();
         }
     }
 
-    public void RollDice()
+    [ServerRpc(RequireOwnership =false)]
+    public void RollDiceServerRpc()
     {
+        if (getDiceNumManually) { } // set the rolled number manually in inspector
+        else rolledNumber = Random.Range(1, 6); // Random number between 1-6
+
+        RollDiceClientRpc(rolledNumber);
+    }
+
+    [ClientRpc]
+    public void RollDiceClientRpc(int rolledNumber)
+    {
+        animator.enabled = true;
         isRolling = true;
         canRoll = false;
         animator.Play("DiceRoll", -1, 0f); // Name of your dice animation clip
-        Invoke(nameof(OnDiceAnimationComplete), 0.25f);
+        StartCoroutine(OnDiceAnimationComplete(rolledNumber, 0.25f));
     }
 
-    public void OnDiceAnimationComplete()
+    private IEnumerator OnDiceAnimationComplete(int rolledNumber, float delay)
     {
-        if (getDiceNumManually) { } // set the rolled number manually in inspector
-        else rolledNumber = Random.Range(1, 7); // Random number between 1-6
-
-        if(rolledNumber < 1 || rolledNumber > 6) diceRenderer.sprite = diceFaces[0]; // Fallback to 1 if rolled num is invalid
+        yield return new WaitForSeconds(delay);
+        if (rolledNumber < 1 || rolledNumber > 6) diceRenderer.sprite = diceFaces[0]; // Fallback to 1 if rolled num is invalid
         else diceRenderer.sprite = diceFaces[rolledNumber - 1]; // Show result face
 
         animator.enabled = false;
         isRolling = false;
 
-        //Debug.Log($"Rolled: {rolledNumber}");
+        Debug.Log($"Rolled: {rolledNumber}");
+
         TurnSystem.Instance.OnDiceRolled(rolledNumber);
         SetDiceInteractive(false);
     }

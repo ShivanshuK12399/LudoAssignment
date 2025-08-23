@@ -102,7 +102,7 @@ public class PlayerController : NetworkBehaviour
         // When movement is done, decide if extra turn or switch
         piece.onMovementComplete = () =>
         {
-            if (TurnSystem.Instance.rolledSix)
+            if (TurnSystem.Instance.rolledSix.Value)
             {
                 Instance.StartTurnServerRpc(Instance.currentPlayer);  // Extra turn
             }

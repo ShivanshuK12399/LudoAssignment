@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using static System.Scripts.GameManager;
 
-public class TurnSystem : MonoBehaviour
+public class TurnSystem : NetworkBehaviour
 {
     public static TurnSystem Instance { get; private set; }
 
@@ -17,8 +17,8 @@ public class TurnSystem : MonoBehaviour
     [SerializeField] private Transform blueDiceHolder;
 
     public event Action<PlayerType> OnTurnChanged;
-    public bool rolledSix = false;
-    public bool hasMovedAfterSix = false;
+    public NetworkVariable<bool> rolledSix = new(false);
+    public NetworkVariable<bool> hasMovedAfterSix = new(false);
 
 
     void Awake()
@@ -32,8 +32,8 @@ public class TurnSystem : MonoBehaviour
         //print($"I {GameManager.Instance.GetLocalPlayer()} is owner");
         dice.rolledNumber = 0;
         GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
-        rolledSix = false;
-        hasMovedAfterSix = false;
+        RolledSixServerRpc(false); //rolledSix = false;
+        HasMovedAfterSixServerRpc(false); //hasMovedAfterSix = false;
 
         if (GameManager.Instance.gameEnded) return; // Don't change turn if game ended
 
@@ -53,8 +53,10 @@ public class TurnSystem : MonoBehaviour
     {
         // when dice is rolled its gets called
 
-        rolledSix = (number == 6);
-        hasMovedAfterSix = false;
+        if (!IsHost) return; // Only host should process turn logic
+
+        RolledSixServerRpc(number == 6); //rolledSix = (number == 6);
+        HasMovedAfterSixServerRpc(false); //hasMovedAfterSix = false;
 
         GameManager.Instance.GetCurrentPlayer().stepsToMove = number;
 
@@ -76,11 +78,11 @@ public class TurnSystem : MonoBehaviour
     {
         // When piece movement is completed its gets called
 
-        hasMovedAfterSix = true;
+        HasMovedAfterSixServerRpc(true); // hasMovedAfterSix = true;
         dice.rolledNumber = 0;
         GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
 
-        if (rolledSix)
+        if (rolledSix.Value)
         {
             // Grant extra turn
             dice.SetDiceInteractive(true);
@@ -93,8 +95,20 @@ public class TurnSystem : MonoBehaviour
         // Moves dice parent to current payer
 
         Transform holder = (player == PlayerType.Green) ? greenDiceHolder : blueDiceHolder;
-        dice.transform.SetParent(holder);
-        dice.transform.localPosition = new Vector3(0, 0, -0.5f);
-        //dice.transform.position = new Vector3(holder.position.x, holder.position.y, holder.position.z - 0.5f);
+        //dice.transform.SetParent(holder);
+        //dice.transform.localPosition = new Vector3(0, 0, -0.5f);
+        dice.transform.position = new Vector3(holder.position.x, holder.position.y, holder.position.z - 0.5f);
+    }
+
+    [ServerRpc(RequireOwnership =false)]
+    void RolledSixServerRpc(bool value)
+    {
+        rolledSix.Value = value;
+    }
+
+    [ServerRpc(RequireOwnership =false)]
+    void HasMovedAfterSixServerRpc(bool value)
+    {
+        hasMovedAfterSix.Value = value;
     }
 }
