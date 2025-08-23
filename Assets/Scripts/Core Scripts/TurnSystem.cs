@@ -29,17 +29,24 @@ public class TurnSystem : MonoBehaviour
 
     public void StartTurn(PlayerType player)
     {
-        dice.rolledNumber = GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
+        //print($"I {GameManager.Instance.GetLocalPlayer()} is owner");
+        dice.rolledNumber = 0;
+        GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
         rolledSix = false;
         hasMovedAfterSix = false;
 
         if (GameManager.Instance.gameEnded) return; // Don't change turn if game ended
 
         MoveDiceToPlayer(player);      // Move dice to correct holder
-        dice.SetDiceInteractive(true); // Allow roll at start
+
+
+        // Only allow the dice to be interactive for the local active player
+        var currentPlayer = GameManager.Instance.GetCurrentPlayer();
+        if (currentPlayer.IsOwner) dice.SetDiceInteractive(true);  // Allow roll at start
+        else dice.SetDiceInteractive(false);
 
         OnTurnChanged?.Invoke(player);
-        Debug.Log($"Turn: {player}");
+        //Debug.Log($"Turn: {player}");
     }
 
     public void OnDiceRolled(int number)
@@ -88,5 +95,6 @@ public class TurnSystem : MonoBehaviour
         Transform holder = (player == PlayerType.Green) ? greenDiceHolder : blueDiceHolder;
         dice.transform.SetParent(holder);
         dice.transform.localPosition = new Vector3(0, 0, -0.5f);
+        //dice.transform.position = new Vector3(holder.position.x, holder.position.y, holder.position.z - 0.5f);
     }
 }

@@ -85,7 +85,7 @@ public class PieceController : MonoBehaviour
 
                 GameObject[] pieces = Instance.currentPlayer == PlayerType.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
                 Instance.GetCurrentPlayer().CheckWinCondition(pieces);
-                TurnSystem.Instance.StartTurn(Instance.currentPlayer); // Extra turn
+                Instance.StartTurnServerRpc(Instance.currentPlayer);  // Extra turn
 
                 goto Skip;  // skipping updates(like TurnChange, DiceChange) on piece reaching home
             }

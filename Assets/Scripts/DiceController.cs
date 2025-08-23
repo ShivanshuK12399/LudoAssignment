@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+﻿using System.Scripts;
 using UnityEngine.UI; // If using UI Button (optional)
 
 public class DiceController : MonoBehaviour
@@ -20,6 +21,11 @@ public class DiceController : MonoBehaviour
 
     void OnMouseDown()
     {
+        // Only allow the active player (and local owner) to roll
+        var currentPlayer = GameManager.Instance.GetCurrentPlayer();
+        if (!currentPlayer.IsOwner) return; // Not my local player
+        if (currentPlayer.playerType.Value != GameManager.Instance.currentPlayer) return; // Not my turn
+
         if (!isRolling && canRoll)
         {
             RollDice();

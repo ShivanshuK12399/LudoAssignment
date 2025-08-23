@@ -1,5 +1,6 @@
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
+using static System.Scripts.GameManager;
 
 
 namespace System.Scripts
@@ -8,7 +9,7 @@ namespace System.Scripts
     {
         public static GameManager Instance;
         public event System.Action<PlayerType> OnPlayerWon;
-        public enum PlayerType { Green, Blue }
+        public enum PlayerType { None, Green, Blue }
         //public event Action OnMatchRestarted;
 
         [Header("Components")]
@@ -21,7 +22,10 @@ namespace System.Scripts
         public int numberOfPiecesPerPlayer = 2; // Number of pieces per player
         public bool gameEnded = false;
 
-        private PlayerController[] allPlayers;
+        public PlayerController[] allPlayers 
+        {
+            get { return new PlayerController[] { greenPlayerController, bluePlayerController }; } 
+        }
 
         void Awake()
         {
@@ -29,37 +33,72 @@ namespace System.Scripts
             else Destroy(gameObject);
         }
 
-        void Start()
+        [ServerRpc(RequireOwnership =false)]
+        public void StartTurnServerRpc(PlayerType player)
         {
-            allPlayers = new PlayerController[] { greenPlayerController, bluePlayerController };
+            if (!IsHost) return;
+            StartTurnClientRpc(player);
         }
 
         [ClientRpc]
         public void StartTurnClientRpc(PlayerType player)
         {
-            //print($"Current player: {player}");
+            print($"Current player: {player}");
             currentPlayer = player;
             UpdatePiecesZ();
             TurnSystem.Instance.StartTurn(player);
         }
 
-        public void RegisterPlayerController(PlayerController pc)
-        {
-            if (pc.playerType == PlayerType.Green)
-                greenPlayerController = pc;
-            else if (pc.playerType == PlayerType.Blue)
-                bluePlayerController = pc;
-        }
-
         public void SwitchTurn()
         {
+            //print($"Switching turn from {currentPlayer}" );
             currentPlayer = (currentPlayer == PlayerType.Green) ? PlayerType.Blue : PlayerType.Green;
-            StartTurnClientRpc(currentPlayer);
+            StartTurnServerRpc(currentPlayer);
+        }
+
+        public void UpdatePiecesZ() // Update Z position of pieces based on current player
+        {
+            foreach (var player in allPlayers) // allPlayers is a list of PlayerControllers
+            {
+                bool isCurrent = (player == GetCurrentPlayer());
+                var pieces = (player.playerType.Value == PlayerType.Green) ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+
+                foreach (var piece in pieces)
+                {
+                    piece.GetComponent<PieceController>().SetPieceZ(isCurrent);
+                }
+            }
+        }
+
+        public void RegisterPlayerController(PlayerController pc)
+        {
+            if (pc.playerType.Value == PlayerType.Green)
+                greenPlayerController = pc;
+            else if (pc.playerType.Value == PlayerType.Blue)
+                bluePlayerController = pc;
         }
 
         public PlayerController GetCurrentPlayer()
         {
             return currentPlayer == PlayerType.Green ? greenPlayerController : bluePlayerController;
+        }
+
+        public PlayerType GetLocalPlayer()
+        {
+            if (IsHost) // this works for host
+            {
+                if (OwnerClientId == NetworkManager.Singleton.LocalClientId)
+                    return PlayerType.Green;
+                else
+                    return PlayerType.Blue;
+            }
+            else // this works for client
+            {
+                if (NetworkManager.ServerClientId == NetworkManager.Singleton.LocalClientId)
+                    return PlayerType.Green;
+                else
+                    return PlayerType.Blue;
+            }
         }
 
         public bool DoesPieceBelongToCurrentPlayer(PieceController piece)
@@ -76,20 +115,6 @@ namespace System.Scripts
             // Stop game or show win screen later
             gameEnded = true;
             TurnSystem.Instance.dice.SetDiceInteractive(false);
-        }
-
-        public void UpdatePiecesZ() // Update Z position of pieces based on current player
-        {
-            foreach (var player in allPlayers) // allPlayers is a list of PlayerControllers
-            {
-                bool isCurrent = (player == GetCurrentPlayer());
-                var pieces = (player.playerType == PlayerType.Green) ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
-
-                foreach (var piece in pieces)
-                {
-                    piece.GetComponent<PieceController>().SetPieceZ(isCurrent);
-                }
-            }
         }
 
         public void RestartMatch() // for future updates...

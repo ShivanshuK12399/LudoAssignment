@@ -35,7 +35,7 @@ public class NetworkCallbacks : MonoBehaviour
         {
             Debug.Log("2 players connected, Preparing Board...");
             BoardHandler.Instance.PrepareBoard();
-            //GameManager.Instance.StartTurnClientRpc(GameManager.PlayerType.Green);
+            GameManager.Instance.StartTurnServerRpc(GameManager.PlayerType.Green);
         }
     }
 

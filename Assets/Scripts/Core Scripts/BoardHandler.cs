@@ -123,12 +123,10 @@ public class BoardHandler : NetworkBehaviour
 
         // --- assign pieces to local PlayerController ---
         var myPlayer = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerController>();
-        if (myPlayer.playerType == PlayerType.Green)
+        if (myPlayer.playerType.Value == PlayerType.Green)
             myPlayer.SetMyPieces(greenPieces);
-        else if (myPlayer.playerType == PlayerType.Blue)
+        else if (myPlayer.playerType.Value == PlayerType.Blue)
             myPlayer.SetMyPieces(bluePieces);
-
-        Debug.Log($"{myPlayer.playerType} synced pieces: {myPlayer.GetMyPieces().Count}");
     }
 
 

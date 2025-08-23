@@ -560,37 +560,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5453308429208570704, guid: f09187d536cba174c8044e3d5a0e4039, type: 3}
   m_PrefabInstance: {fileID: 1871795786}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &180575803
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 180575804}
-  m_Layer: 0
-  m_Name: Players
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &180575804
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 180575803}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &186008282
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2421,7 +2390,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &936214449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6450,7 +6419,6 @@ SceneRoots:
   - {fileID: 1080178700}
   - {fileID: 1008910790}
   - {fileID: 682049684}
-  - {fileID: 180575804}
   - {fileID: 1829289640}
   - {fileID: 1025392766}
   - {fileID: 1642074924}

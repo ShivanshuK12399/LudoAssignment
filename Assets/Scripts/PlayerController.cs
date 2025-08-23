@@ -12,7 +12,12 @@ public class PlayerController : NetworkBehaviour
     public int homeCount = 0;
 
     [Header("Components")]
-    public PlayerType playerType;
+    public NetworkVariable<PlayerType> playerType = new NetworkVariable<PlayerType>
+    (
+       PlayerType.None,
+       NetworkVariableReadPermission.Everyone,    // who can read
+       NetworkVariableWritePermission.Server      // who can write
+    );
     public GameObject selectedPiece;
     public GameObject piecePrefab;
     [SerializeField] private List<GameObject> myPieces = new List<GameObject>();
@@ -28,27 +33,18 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsHost) // this works for host
+        if (IsServer) // only server decides
         {
-            if (OwnerClientId == NetworkManager.Singleton.LocalClientId)
-                playerType = PlayerType.Green;
+            if (OwnerClientId == NetworkManager.ServerClientId)
+                playerType.Value = PlayerType.Green;
             else
-                playerType = PlayerType.Blue;
+                playerType.Value = PlayerType.Blue;
         }
-        else if (IsOwner) // this works for client
-        {
-            if (NetworkManager.ServerClientId == NetworkManager.Singleton.LocalClientId)
-                playerType = PlayerType.Green;
-            else
-                playerType = PlayerType.Blue;
-        }
-
-        // Find setup entry for this playerType
-        var setup = playerSetups.First(s => s.type == playerType);
-        piecePrefab = setup.piecePrefab;
 
         Debug.Log($"{playerType} Player spawned.");
 
+        var setup = playerSetups.First(s => s.type == playerType.Value);
+        piecePrefab = setup.piecePrefab;
         GameManager.Instance.RegisterPlayerController(this);
     }
 
@@ -56,7 +52,7 @@ public class PlayerController : NetworkBehaviour
     {
         myPieces.Clear();
         myPieces.AddRange(pieces);
-        Debug.Log($"{playerType} received {myPieces.Count} pieces");
+        //Debug.Log($"{playerType} received {myPieces.Count} pieces");
     }
 
     public List<GameObject> GetMyPieces() => myPieces;
@@ -64,6 +60,14 @@ public class PlayerController : NetworkBehaviour
     // select token from click
     public void SelectPiece(GameObject token)
     {
+        if (!IsOwner) return; // Not my local player
+
+        if (playerType.Value != Instance.currentPlayer)
+        {
+            Debug.Log("Not your turn!");
+            return;
+        }
+
         PieceController piece = token.GetComponent<PieceController>();
 
         // Check if the selected piece belongs to the current player
@@ -100,7 +104,7 @@ public class PlayerController : NetworkBehaviour
         {
             if (TurnSystem.Instance.rolledSix)
             {
-                TurnSystem.Instance.StartTurn(Instance.currentPlayer); // Extra turn
+                Instance.StartTurnServerRpc(Instance.currentPlayer);  // Extra turn
             }
             else
             {
