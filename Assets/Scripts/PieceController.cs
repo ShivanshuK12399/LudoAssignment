@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 using System.Scripts;
 using static System.Scripts.GameManager;
 
-public class PieceController : MonoBehaviour
+public class PieceController : NetworkBehaviour
 {
-    public Transform CurrentTile { get; private set; }
     public System.Action onMovementComplete;
 
     [Header("Components")]
@@ -16,7 +16,10 @@ public class PieceController : MonoBehaviour
     public PlayerType pieceOwner;
     public bool hasReachedHome = false;
 
-    private int currentTileIndex = -1; // -1 = not on board yet
+    public NetworkVariable<int> currentTileIndex = new NetworkVariable<int>(
+        -1,  // -1 = not on board yet
+        NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
     private float moveSpeed = 6f;
 
     private void Start()
@@ -33,17 +36,11 @@ public class PieceController : MonoBehaviour
         }
     }
 
-    public void UpdateTile(Transform newTile)
-    {
-        // tracks piece tile
-        CurrentTile = newTile;
-    }
-
     public void MoveBySteps(int steps)
     {
         if (BoardHandler.Instance == null) return;
 
-        if (currentTileIndex == -1 && steps != 6)
+        if (currentTileIndex.Value == -1 && steps != 6)
         {
             Debug.Log("Need 6 to enter board.");
             return;
@@ -55,13 +52,13 @@ public class PieceController : MonoBehaviour
         StartCoroutine(MoveAlongPath(path, steps));
     }
 
-    IEnumerator MoveAlongPath(System.Collections.Generic.List<Transform> path, int steps)
+    IEnumerator MoveAlongPath(List<Transform> path, int steps)
     {
-        if (currentTileIndex == -1) steps = 1; // Move only 1 step when get on board from base
+        if (currentTileIndex.Value == -1) steps = 1; // Move only 1 step when get on board from base
 
         while (steps > 0)
         {
-            int nextIndex = currentTileIndex + 1;
+            int nextIndex = currentTileIndex.Value + 1;
             if (nextIndex >= path.Count)
             {
                 Debug.Log($"{name} has reached the end.");
@@ -75,10 +72,10 @@ public class PieceController : MonoBehaviour
                 yield return null;
             }
 
-            currentTileIndex = nextIndex;
+            ChangeCurrentTileIndexServerRpc(nextIndex);
             steps--;
 
-            if (currentTileIndex + 1 == path.Count) // currentTileIndex + 1 is used beacuse indexing start from 0
+            if (currentTileIndex.Value + 1 == path.Count) // currentTileIndex + 1 is used beacuse indexing start from 0
             {
                 Debug.Log($"{name} has reached home.");
                 hasReachedHome = true;
@@ -94,9 +91,7 @@ public class PieceController : MonoBehaviour
         }
 
         // Movement complete
-        
         onMovementComplete?.Invoke();  // listinig this event in Player controller
-        UpdateTile(path[currentTileIndex]);
         CheckCapture();
 Skip:
         TurnSystem.Instance.OnPieceMoved();
@@ -104,7 +99,8 @@ Skip:
 
     public void CheckCapture()
     {
-        Transform currentTile = CurrentTile;
+        Transform currentTile = GetCurrentTile();
+
         if (BoardHandler.Instance.IsSafeTile(currentTile) || this.hasReachedHome)
         {
             // Don't capture piece if on safe tile or reached home
@@ -117,7 +113,6 @@ Skip:
         {
             foreach(PieceController piece in opponent)
             {
-                //Debug.Log($"Captured {piece}");
                 piece.SendToBase();
             }
             print("Captured opponent");
@@ -130,11 +125,28 @@ Skip:
     {
         // Send captured piece to its respective base
 
-        currentTileIndex = -1;
+        ChangeCurrentTileIndexServerRpc(-1);
         PlayerType player=(pieceOwner==PlayerType.Green)? PlayerType.Green : PlayerType.Blue;
 
-        BoardHandler.Instance.PlacePiecesAtStart(this.gameObject, player);
-        UpdateTile(null);
+        ulong pieceId=this.gameObject.GetComponent<NetworkObject>().NetworkObjectId;
+        BoardHandler.Instance.PlacePiecesAtStartServerRpc(pieceId, player);
+    }
+
+    public Transform GetCurrentTile()
+    {
+        var path = pieceOwner == PlayerType.Green ?
+                   BoardHandler.Instance.greenPathPoints :
+                   BoardHandler.Instance.bluePathPoints;
+
+        return (currentTileIndex.Value >= 0 && currentTileIndex.Value < path.Count)
+            ? path[currentTileIndex.Value]
+            : null;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void ChangeCurrentTileIndexServerRpc(int value)
+    {
+        currentTileIndex.Value = value;
     }
 
     public void SetPieceZ(bool isCurrentPlayer) 
@@ -146,15 +158,14 @@ Skip:
         transform.position = pos;
     }
 
-
     public bool CanMove(int steps)
     {
         // Checks if player can move
 
-        if (currentTileIndex == -1)
+        if (currentTileIndex.Value == -1)
             return steps == 6;
 
-        return currentTileIndex + steps < BoardHandler.Instance.pathPointsCount;
+        return currentTileIndex.Value + steps < BoardHandler.Instance.pathPointsCount;
     }
 
     public void ResetPiece()

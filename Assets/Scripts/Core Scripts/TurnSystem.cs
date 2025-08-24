@@ -30,8 +30,8 @@ public class TurnSystem : NetworkBehaviour
     public void StartTurn(PlayerType player)
     {
         //print($"I {GameManager.Instance.GetLocalPlayer()} is owner");
-        dice.rolledNumber = 0;
-        GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
+        dice.rolledNumber = GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
+
         RolledSixServerRpc(false); //rolledSix = false;
         HasMovedAfterSixServerRpc(false); //hasMovedAfterSix = false;
 
@@ -52,19 +52,19 @@ public class TurnSystem : NetworkBehaviour
     public void OnDiceRolled(int number)
     {
         // when dice is rolled its gets called
+        GameManager.Instance.GetCurrentPlayer().stepsToMove = number;
 
         if (!IsHost) return; // Only host should process turn logic
 
         RolledSixServerRpc(number == 6); //rolledSix = (number == 6);
         HasMovedAfterSixServerRpc(false); //hasMovedAfterSix = false;
 
-        GameManager.Instance.GetCurrentPlayer().stepsToMove = number;
 
         bool hasMovableToken = GameManager.Instance.GetCurrentPlayer().HasValidMove(number);
 
         if (!hasMovableToken)
         {
-            Debug.Log("No valid tokens to move. Switching turn...");
+            //Debug.Log("No valid tokens to move. Switching turn...");
             Invoke(nameof(SwitchTurn), 0.5f);
         }
     }

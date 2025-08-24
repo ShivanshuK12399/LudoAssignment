@@ -3011,11 +3011,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7be850d5016c5c54497a08f9bec4660e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   dice: {fileID: 1829289643}
   greenDiceHolder: {fileID: 827716669}
   blueDiceHolder: {fileID: 1283317537}
-  rolledSix: 0
-  hasMovedAfterSix: 0
+  rolledSix:
+    m_InternalValue: 0
+  hasMovedAfterSix:
+    m_InternalValue: 0
 --- !u!114 &1080178702
 MonoBehaviour:
   m_ObjectHideFlags: 0

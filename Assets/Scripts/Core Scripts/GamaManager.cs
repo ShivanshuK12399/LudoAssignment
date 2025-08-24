@@ -43,7 +43,7 @@ namespace System.Scripts
         [ClientRpc]
         public void StartTurnClientRpc(PlayerType player)
         {
-            print($"Current player: {player}");
+            //print($"Current player: {player}");
             currentPlayer = player;
             UpdatePiecesZ();
             TurnSystem.Instance.StartTurn(player);

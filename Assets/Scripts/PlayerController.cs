@@ -30,7 +30,6 @@ public class PlayerController : NetworkBehaviour
     }
     public List<PlayerSetup> playerSetups;
 
-
     public override void OnNetworkSpawn()
     {
         if (IsServer) // only server decides
@@ -41,7 +40,7 @@ public class PlayerController : NetworkBehaviour
                 playerType.Value = PlayerType.Blue;
         }
 
-        Debug.Log($"{playerType} Player spawned.");
+        //Debug.Log($"{playerType} Player spawned.");
 
         var setup = playerSetups.First(s => s.type == playerType.Value);
         piecePrefab = setup.piecePrefab;
@@ -54,8 +53,6 @@ public class PlayerController : NetworkBehaviour
         myPieces.AddRange(pieces);
         //Debug.Log($"{playerType} received {myPieces.Count} pieces");
     }
-
-    public List<GameObject> GetMyPieces() => myPieces;
 
     // select token from click
     public void SelectPiece(GameObject token)
@@ -71,7 +68,7 @@ public class PlayerController : NetworkBehaviour
         PieceController piece = token.GetComponent<PieceController>();
 
         // Check if the selected piece belongs to the current player
-        if (!GameManager.Instance.DoesPieceBelongToCurrentPlayer(piece))
+        if (!Instance.DoesPieceBelongToCurrentPlayer(piece))
         {
             print("Selected piece not belongs to the current player");
             return;
@@ -81,7 +78,6 @@ public class PlayerController : NetworkBehaviour
         selectedPiece = token;
         MoveSelectedPiece();
     }
-
 
     public void MoveSelectedPiece()
     {

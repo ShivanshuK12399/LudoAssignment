@@ -97,7 +97,6 @@ public class BoardHandler : NetworkBehaviour
         SyncPiecesClientRpc(greenIds, blueIds, allIds);
     }
 
-
     [ClientRpc]
     private void SyncPiecesClientRpc(ulong[] greenIds, ulong[] blueIds, ulong[] allIds)
     {
@@ -130,13 +129,21 @@ public class BoardHandler : NetworkBehaviour
     }
 
 
-    public void PlacePiecesAtStart(GameObject token,PlayerType player)
+    [ServerRpc(RequireOwnership = false)]
+    public void PlacePiecesAtStartServerRpc(ulong pieceId, PlayerType player)
+    {
+        PlacePiecesAtStartClientRpc(pieceId,player);
+    }
+
+    [ClientRpc]
+    public void PlacePiecesAtStartClientRpc(ulong pieceId, PlayerType player)
     {
         // Sets pieces to its start location
 
         List<Transform>initialPoints = (player == PlayerType.Green) ? initialGreenPoints : initialBluePoints;
         GameObject[] pieces = (player == PlayerType.Green) ? greenPieces : bluePieces;
 
+        GameObject token = NetworkManager.Singleton.SpawnManager.SpawnedObjects[pieceId].gameObject;
         token.transform.position = initialPoints[System.Array.IndexOf(pieces, token)].position;
     }
 
@@ -149,8 +156,9 @@ public class BoardHandler : NetworkBehaviour
         {
             if (piece == movingPiece) continue;
 
-            if (piece.CurrentTile == movingPieceCurrentTile && piece.playerController != movingPiece.playerController)
+            if (piece.GetCurrentTile() == movingPieceCurrentTile && piece.playerController != movingPiece.playerController)
             {
+                //print($"Opponent found: {piece}");
                 capturedPieces.Add(piece);
             }
         }

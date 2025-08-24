@@ -24,7 +24,9 @@ public class NetworkCallbacks : MonoBehaviour
     private void HandleServerStarted()
     {
         if (NetworkManager.Singleton.IsHost)
-            Debug.Log("✅ Host started the game.");
+        {
+            //Debug.Log("✅ Host started the game.");
+        }
     }
 
     private void HandleClientConnected(ulong clientId)

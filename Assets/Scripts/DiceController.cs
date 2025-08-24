@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 ﻿using System.Scripts;
-using UnityEngine.UI;
+using UnityEngine.UI; // If using UI Button (optional)
 using Unity.Netcode;
-using System.Collections; // If using UI Button (optional)
+using System.Collections;
 
 public class DiceController : NetworkBehaviour
 {
@@ -38,33 +38,35 @@ public class DiceController : NetworkBehaviour
     public void RollDiceServerRpc()
     {
         if (getDiceNumManually) { } // set the rolled number manually in inspector
-        else rolledNumber = Random.Range(1, 6); // Random number between 1-6
+        else rolledNumber = Random.Range(1, 7); // Random number between 1-6
 
         RollDiceClientRpc(rolledNumber);
     }
 
     [ClientRpc]
-    public void RollDiceClientRpc(int rolledNumber)
+    public void RollDiceClientRpc(int number)
     {
+        rolledNumber = number;  // Set rolled number for local player use
         animator.enabled = true;
         isRolling = true;
         canRoll = false;
         animator.Play("DiceRoll", -1, 0f); // Name of your dice animation clip
-        StartCoroutine(OnDiceAnimationComplete(rolledNumber, 0.25f));
+        StartCoroutine(OnDiceAnimationComplete(number, 0.25f));
     }
 
-    private IEnumerator OnDiceAnimationComplete(int rolledNumber, float delay)
+    private IEnumerator OnDiceAnimationComplete(int number, float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (rolledNumber < 1 || rolledNumber > 6) diceRenderer.sprite = diceFaces[0]; // Fallback to 1 if rolled num is invalid
-        else diceRenderer.sprite = diceFaces[rolledNumber - 1]; // Show result face
+
+        if (number < 1 || number > 6) diceRenderer.sprite = diceFaces[0]; // Fallback to 1 if rolled num is invalid
+        else diceRenderer.sprite = diceFaces[number - 1]; // Show result face
 
         animator.enabled = false;
         isRolling = false;
 
-        Debug.Log($"Rolled: {rolledNumber}");
+        //Debug.Log($"Rolled: {number}");
 
-        TurnSystem.Instance.OnDiceRolled(rolledNumber);
+        TurnSystem.Instance.OnDiceRolled(number);
         SetDiceInteractive(false);
     }
 
