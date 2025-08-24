@@ -1,7 +1,5 @@
 using Unity.Netcode;
 using UnityEngine;
-using static System.Scripts.GameManager;
-
 
 namespace System.Scripts
 {
@@ -17,21 +15,24 @@ namespace System.Scripts
         public PlayerController bluePlayerController;
         public PlayerType currentPlayer;
 
+        public PlayerController[] allPlayers
+        {
+            get { return new PlayerController[] { greenPlayerController, bluePlayerController }; }
+        }
+
         [Space(15)]
         public int numberOfPlayers = 2; // Currently only supports 2 players
         public int numberOfPiecesPerPlayer = 2; // Number of pieces per player
         public bool gameEnded = false;
 
-        public PlayerController[] allPlayers 
-        {
-            get { return new PlayerController[] { greenPlayerController, bluePlayerController }; } 
-        }
 
         void Awake()
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
         }
+
+
 
         [ServerRpc(RequireOwnership =false)]
         public void StartTurnServerRpc(PlayerType player)
@@ -48,6 +49,27 @@ namespace System.Scripts
             UpdatePiecesZ();
             TurnSystem.Instance.StartTurn(player);
         }
+
+
+
+        [ServerRpc(RequireOwnership = false)]
+        public void PlayerWonServerRpc(PlayerType player)
+        {
+            PlayerWonClientRpc(player);
+        }
+
+        [ClientRpc]
+        public void PlayerWonClientRpc(PlayerType player)
+        {
+            Debug.Log($"Player {player} wins!");
+            OnPlayerWon?.Invoke(player);
+
+            // Stop game or show win screen later
+            gameEnded = true;
+            TurnSystem.Instance.dice.SetDiceInteractive(false);
+        }
+
+
 
         public void SwitchTurn()
         {
@@ -78,11 +100,22 @@ namespace System.Scripts
                 bluePlayerController = pc;
         }
 
+        public void RestartMatch() // for future updates...
+        {
+            gameEnded = false;
+
+            // BoardHandler.Instance.ResetBoard();
+            // TurnSystem.Instance.ResetTurns();
+            // TurnSystem.Instance.dice.SetDiceInteractive(false);
+            // OnMatchRestarted?.Invoke();
+        }
+
+
+
         public PlayerController GetCurrentPlayer()
         {
             return currentPlayer == PlayerType.Green ? greenPlayerController : bluePlayerController;
         }
-
         public PlayerType GetLocalPlayer()
         {
             if (IsHost) // this works for host
@@ -100,33 +133,11 @@ namespace System.Scripts
                     return PlayerType.Blue;
             }
         }
-
         public bool DoesPieceBelongToCurrentPlayer(PieceController piece)
         {
             return (currentPlayer == PlayerType.Green && piece.pieceOwner == PlayerType.Green)
                 || (currentPlayer == PlayerType.Blue && piece.pieceOwner == PlayerType.Blue);
         }
-
-        public void PlayerWon(PlayerType player)
-        {
-            Debug.Log($"Player {player} wins!");
-            OnPlayerWon?.Invoke(player);
-
-            // Stop game or show win screen later
-            gameEnded = true;
-            TurnSystem.Instance.dice.SetDiceInteractive(false);
-        }
-
-        public void RestartMatch() // for future updates...
-        {
-            gameEnded = false;
-
-            // BoardHandler.Instance.ResetBoard();
-            // TurnSystem.Instance.ResetTurns();
-            // TurnSystem.Instance.dice.SetDiceInteractive(false);
-            // OnMatchRestarted?.Invoke();
-        }
-
     }
 }
 

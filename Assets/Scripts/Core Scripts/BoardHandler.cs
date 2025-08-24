@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Scripts;
 using Unity.Netcode;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using static System.Scripts.GameManager;
 
@@ -19,15 +18,14 @@ public class BoardHandler : NetworkBehaviour
     public List<Transform> bluePathPoints;
     public List<Transform> safeTiles;
 
-
     [Header("Pieces")]
     public GameObject[] greenPieces;
     public GameObject[] bluePieces;
     public List<PieceController> allPieces=new List<PieceController>(); // active pieces
 
-
     [Space(15)]
     public int pathPointsCount = 38; // Total path points for each player
+
 
 
     void Awake()
@@ -41,10 +39,9 @@ public class BoardHandler : NetworkBehaviour
     }
 
 
+
     public void PrepareBoard()
     {
-        if (!IsHost) return; // Only the Host/Server spawns
-
         // declaring array size
         greenPieces = new GameObject[GameManager.Instance.numberOfPiecesPerPlayer];
         bluePieces = new GameObject[GameManager.Instance.numberOfPiecesPerPlayer];
@@ -85,10 +82,6 @@ public class BoardHandler : NetworkBehaviour
             allPieces.Add(token);
         }
 
-        // --- Let PlayerControllers know their pieces ---
-        greenPlayer.SetMyPieces(greenPieces);
-        bluePlayer.SetMyPieces(bluePieces);
-
         // --- Sync with all clients ---
         ulong[] greenIds = greenPieces.Select(p => p.GetComponent<NetworkObject>().NetworkObjectId).ToArray();
         ulong[] blueIds = bluePieces.Select(p => p.GetComponent<NetworkObject>().NetworkObjectId).ToArray();
@@ -119,14 +112,8 @@ public class BoardHandler : NetworkBehaviour
             var go = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].gameObject;
             allPieces.Add(go.GetComponent<PieceController>());
         }
-
-        // --- assign pieces to local PlayerController ---
-        var myPlayer = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerController>();
-        if (myPlayer.playerType.Value == PlayerType.Green)
-            myPlayer.SetMyPieces(greenPieces);
-        else if (myPlayer.playerType.Value == PlayerType.Blue)
-            myPlayer.SetMyPieces(bluePieces);
     }
+
 
 
     [ServerRpc(RequireOwnership = false)]
@@ -147,6 +134,22 @@ public class BoardHandler : NetworkBehaviour
         token.transform.position = initialPoints[System.Array.IndexOf(pieces, token)].position;
     }
 
+
+
+    public void ResetBoard()
+    {
+        /*foreach (GameObject token in greenPieces)
+        {
+            token.GetComponent<PieceController>().ResetPiece();
+            token.transform.position = initialGreenPoints[System.Array.IndexOf(greenPieces, token)].position;
+        }
+
+        foreach (GameObject token in bluePieces)
+        {
+            token.GetComponent<PieceController>().ResetPiece();
+            token.transform.position = initialBluePoints[System.Array.IndexOf(bluePieces, token)].position;
+        }*/
+    }
     public List<PieceController> GetOpponentPieceOnTile(Transform movingPieceCurrentTile, PieceController movingPiece)
     {
         // Give list of pieces on tile which is to be captured
@@ -164,25 +167,8 @@ public class BoardHandler : NetworkBehaviour
         }
         return capturedPieces;
     }
-
     public bool IsSafeTile(Transform tile)
     {
         return safeTiles.Contains(tile);
     }
-
-    public void ResetBoard()
-    {
-        /*foreach (GameObject token in greenPieces)
-        {
-            token.GetComponent<PieceController>().ResetPiece();
-            token.transform.position = initialGreenPoints[System.Array.IndexOf(greenPieces, token)].position;
-        }
-
-        foreach (GameObject token in bluePieces)
-        {
-            token.GetComponent<PieceController>().ResetPiece();
-            token.transform.position = initialBluePoints[System.Array.IndexOf(bluePieces, token)].position;
-        }*/
-    }
-
 }

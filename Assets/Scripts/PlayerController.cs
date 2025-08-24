@@ -2,25 +2,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Scripts;
 using Unity.Netcode;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using static System.Scripts.GameManager;
 
 public class PlayerController : NetworkBehaviour
 {
-    public int stepsToMove = 0;
-    public int homeCount = 0;
-
-    [Header("Components")]
     public NetworkVariable<PlayerType> playerType = new NetworkVariable<PlayerType>
     (
        PlayerType.None,
        NetworkVariableReadPermission.Everyone,    // who can read
        NetworkVariableWritePermission.Server      // who can write
     );
-    public GameObject selectedPiece;
-    public GameObject piecePrefab;
-    [SerializeField] private List<GameObject> myPieces = new List<GameObject>();
 
     [System.Serializable]
     public class PlayerSetup
@@ -28,7 +20,15 @@ public class PlayerController : NetworkBehaviour
         public PlayerType type;
         public GameObject piecePrefab;
     }
+
+    [Header("Components")]
+    public GameObject selectedPiece;
+    public GameObject piecePrefab;
     public List<PlayerSetup> playerSetups;
+
+    public int stepsToMove = 0;
+    public int homeCount = 0;
+
 
     public override void OnNetworkSpawn()
     {
@@ -47,17 +47,13 @@ public class PlayerController : NetworkBehaviour
         GameManager.Instance.RegisterPlayerController(this);
     }
 
-    public void SetMyPieces(GameObject[] pieces)
-    {
-        myPieces.Clear();
-        myPieces.AddRange(pieces);
-        //Debug.Log($"{playerType} received {myPieces.Count} pieces");
-    }
 
     // select token from click
     public void SelectPiece(GameObject token)
     {
         if (!IsOwner) return; // Not my local player
+
+        PieceController piece = token.GetComponent<PieceController>();
 
         if (playerType.Value != Instance.currentPlayer)
         {
@@ -65,12 +61,15 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        PieceController piece = token.GetComponent<PieceController>();
-
-        // Check if the selected piece belongs to the current player
         if (!Instance.DoesPieceBelongToCurrentPlayer(piece))
         {
-            print("Selected piece not belongs to the current player");
+            Debug.Log("Selected piece not belongs to the current player");
+            return;
+        }
+
+        if(TurnSystem.Instance.hasMoved.Value)
+        {
+            Debug.Log("Already moved a piece");
             return;
         }
 
@@ -81,7 +80,7 @@ public class PlayerController : NetworkBehaviour
 
     public void MoveSelectedPiece()
     {
-        if (selectedPiece == null || stepsToMove < 0)
+        if (selectedPiece == null || stepsToMove <= 0)
         {
             Debug.LogWarning("No piece selected or invalid step count.");
             return;
@@ -111,6 +110,7 @@ public class PlayerController : NetworkBehaviour
 
     }
 
+
     public bool HasValidMove(int steps)
     {
         GameObject[] pieces= Instance.currentPlayer == PlayerType.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
@@ -124,17 +124,15 @@ public class PlayerController : NetworkBehaviour
         return false;
     }
 
-    public void CheckWinCondition(GameObject[] pieces)
+
+    public void CheckWinCondition(GameObject piece)
     {
-        foreach (GameObject token in pieces)
-        {
-            if (token.GetComponent<PieceController>().hasReachedHome)
-                homeCount++;
-        }
+        if (piece.GetComponent<PieceController>().hasReachedHome)
+            homeCount++;
 
         if (homeCount >= Instance.numberOfPiecesPerPlayer) // number of pieces per player in game
         {
-            Instance.PlayerWon(Instance.currentPlayer);
+            Instance.PlayerWonServerRpc(Instance.currentPlayer);
         }
     }
 }

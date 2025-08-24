@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Scripts;
+﻿using System.Scripts;
 using Unity.Netcode;
 using UnityEngine;
 

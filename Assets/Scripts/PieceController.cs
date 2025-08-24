@@ -1,13 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.Netcode;
-using System.Scripts;
+using UnityEngine;
 using static System.Scripts.GameManager;
 
 public class PieceController : NetworkBehaviour
 {
-    public System.Action onMovementComplete;
+    public NetworkVariable<int> currentTileIndex = new NetworkVariable<int>
+    (
+        -1,  // -1 = not on board yet
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+    public Action onMovementComplete;
 
     [Header("Components")]
     public PlayerController playerController;
@@ -15,12 +21,9 @@ public class PieceController : NetworkBehaviour
     [Space(15)]
     public PlayerType pieceOwner;
     public bool hasReachedHome = false;
-
-    public NetworkVariable<int> currentTileIndex = new NetworkVariable<int>(
-        -1,  // -1 = not on board yet
-        NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
     private float moveSpeed = 6f;
+
+
 
     private void Start()
     {
@@ -36,6 +39,7 @@ public class PieceController : NetworkBehaviour
         }
     }
 
+
     public void MoveBySteps(int steps)
     {
         if (BoardHandler.Instance == null) return;
@@ -49,6 +53,7 @@ public class PieceController : NetworkBehaviour
         // Get correct path based on piece color
         var path = pieceOwner == PlayerType.Green ? BoardHandler.Instance.greenPathPoints : BoardHandler.Instance.bluePathPoints;
 
+        TurnSystem.Instance.HasMovedServerRpc(true);
         StartCoroutine(MoveAlongPath(path, steps));
     }
 
@@ -80,8 +85,7 @@ public class PieceController : NetworkBehaviour
                 Debug.Log($"{name} has reached home.");
                 hasReachedHome = true;
 
-                GameObject[] pieces = Instance.currentPlayer == PlayerType.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
-                Instance.GetCurrentPlayer().CheckWinCondition(pieces);
+                Instance.GetCurrentPlayer().CheckWinCondition(this.gameObject);
                 Instance.StartTurnServerRpc(Instance.currentPlayer);  // Extra turn
 
                 goto Skip;  // skipping updates(like TurnChange, DiceChange) on piece reaching home
@@ -96,6 +100,8 @@ public class PieceController : NetworkBehaviour
 Skip:
         TurnSystem.Instance.OnPieceMoved();
     }
+
+
 
     public void CheckCapture()
     {
@@ -126,12 +132,26 @@ Skip:
         // Send captured piece to its respective base
 
         ChangeCurrentTileIndexServerRpc(-1);
-        PlayerType player=(pieceOwner==PlayerType.Green)? PlayerType.Green : PlayerType.Blue;
 
         ulong pieceId=this.gameObject.GetComponent<NetworkObject>().NetworkObjectId;
-        BoardHandler.Instance.PlacePiecesAtStartServerRpc(pieceId, player);
+        BoardHandler.Instance.PlacePiecesAtStartServerRpc(pieceId, pieceOwner);
     }
 
+
+
+    [ServerRpc(RequireOwnership = false)]
+    public void ChangeCurrentTileIndexServerRpc(int value)
+    {
+        currentTileIndex.Value = value;
+    }
+    public void SetPieceZ(bool isCurrentPlayer)
+    {
+        // Make current player's piece appear above the opponent's
+
+        Vector3 pos = transform.position;
+        pos.z = isCurrentPlayer ? -2f : -1f;
+        transform.position = pos;
+    }
     public Transform GetCurrentTile()
     {
         var path = pieceOwner == PlayerType.Green ?
@@ -142,22 +162,6 @@ Skip:
             ? path[currentTileIndex.Value]
             : null;
     }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void ChangeCurrentTileIndexServerRpc(int value)
-    {
-        currentTileIndex.Value = value;
-    }
-
-    public void SetPieceZ(bool isCurrentPlayer) 
-    {
-        // Make current player's piece appear above the opponent's
-
-        Vector3 pos = transform.position;
-        pos.z = isCurrentPlayer ? -2f : -1f;
-        transform.position = pos;
-    }
-
     public bool CanMove(int steps)
     {
         // Checks if player can move
@@ -167,7 +171,6 @@ Skip:
 
         return currentTileIndex.Value + steps < BoardHandler.Instance.pathPointsCount;
     }
-
     public void ResetPiece()
     {
         /*currentStep = 0;
