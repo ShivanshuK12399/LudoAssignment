@@ -121,8 +121,8 @@ Skip:
             {
                 piece.SendToBase();
             }
-            print("Captured opponent");
-            //print($"Player switched from {this}");
+            Debug.Log("Captured opponent");
+            //Debug.Log($"Player switched from {this}");
             Instance.SwitchTurn();
         }
     }

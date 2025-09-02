@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -6,24 +7,26 @@ namespace System.Scripts
     public class GameManager : NetworkBehaviour
     {
         public static GameManager Instance;
-        public event System.Action<PlayerType> OnPlayerWon;
+        public event System.Action<PlayerType,int> EndScreen;
         public enum PlayerType { None, Green, Blue }
         //public event Action OnMatchRestarted;
 
         [Header("Components")]
+        public GameSceneUI gameSceneUI;
         public PlayerController greenPlayerController;
         public PlayerController bluePlayerController;
         public PlayerType currentPlayer;
 
         public PlayerController[] allPlayers
         {
-            get { return new PlayerController[] { greenPlayerController, bluePlayerController }; }
+            get { return new PlayerController[] { greenPlayerController, bluePlayerController}; }
         }
 
         [Space(15)]
         public int numberOfPlayers = 2; // Currently only supports 2 players
         public int numberOfPiecesPerPlayer = 2; // Number of pieces per player
         public bool gameEnded = false;
+        public List<GameObject> clientHistory = new List<GameObject>();
 
 
         void Awake()
@@ -44,7 +47,7 @@ namespace System.Scripts
         [ClientRpc]
         public void StartTurnClientRpc(PlayerType player)
         {
-            //print($"Current player: {player}");
+            Debug.Log($"Current player: {player}");
             currentPlayer = player;
             UpdatePiecesZ();
             TurnSystem.Instance.StartTurn(player);
@@ -62,7 +65,7 @@ namespace System.Scripts
         public void PlayerWonClientRpc(PlayerType player)
         {
             Debug.Log($"Player {player} wins!");
-            OnPlayerWon?.Invoke(player);
+            EndScreen?.Invoke(player,1); // 1 = wins
 
             // Stop game or show win screen later
             gameEnded = true;
@@ -73,7 +76,7 @@ namespace System.Scripts
 
         public void SwitchTurn()
         {
-            //print($"Switching turn from {currentPlayer}" );
+            //Debug.Log($"Switching turn from {currentPlayer}" );
             currentPlayer = (currentPlayer == PlayerType.Green) ? PlayerType.Blue : PlayerType.Green;
             StartTurnServerRpc(currentPlayer);
         }
@@ -98,6 +101,13 @@ namespace System.Scripts
                 greenPlayerController = pc;
             else if (pc.playerType.Value == PlayerType.Blue)
                 bluePlayerController = pc;
+        }
+
+        public void OnClientDisconnects(ulong clientId)
+        {
+            PlayerController player = clientHistory[(int)clientId].GetComponent<PlayerController>();
+
+            gameSceneUI.ShowEndPanel(player.playerType.Value, 0); // 0 = disconnects
         }
 
         public void RestartMatch() // for future updates...

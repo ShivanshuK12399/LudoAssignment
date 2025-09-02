@@ -95,7 +95,7 @@ public class BoardHandler : NetworkBehaviour
     {
         if (IsHost) return; // Host already has the arrays filled
 
-        print("Client Syncing Pieces...");
+        Debug.Log("Client Syncing Pieces...");
 
         // --- rebuild arrays for every client ---
         greenPieces = greenIds
@@ -161,7 +161,7 @@ public class BoardHandler : NetworkBehaviour
 
             if (piece.GetCurrentTile() == movingPieceCurrentTile && piece.playerController != movingPiece.playerController)
             {
-                //print($"Opponent found: {piece}");
+                //Debug.Log($"Opponent found: {piece}");
                 capturedPieces.Add(piece);
             }
         }

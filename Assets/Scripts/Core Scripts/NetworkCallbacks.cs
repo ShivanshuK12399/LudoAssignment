@@ -1,4 +1,5 @@
-﻿using System.Scripts;
+﻿using System;
+using System.Scripts;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ public class NetworkCallbacks : MonoBehaviour
     {
         if (NetworkManager.Singleton.IsHost)
         {
-            //Debug.Log("✅ Host started the game.");
+            Debug.Log("✅ Host started the game.");
         }
     }
 
@@ -34,6 +35,13 @@ public class NetworkCallbacks : MonoBehaviour
 
         if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.ConnectedClients.Count == 2)
         {
+            foreach (ulong id in NetworkManager.Singleton.ConnectedClientsIds)
+            {
+                // creating player object for each connected client instead of NetworkManager's automatic spawning
+                GameObject player = Instantiate(DataManager.Instance.playerPrefab);
+                player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
+            }
+
             Debug.Log("2 players connected, Preparing Board...");
             BoardHandler.Instance.PrepareBoard();
             GameManager.Instance.StartTurnServerRpc(GameManager.PlayerType.Green);
@@ -43,5 +51,14 @@ public class NetworkCallbacks : MonoBehaviour
     private void HandleClientDisconnected(ulong clientId)
     {
         Debug.Log($"❌ Client {clientId} disconnected.");
+        try
+        {
+            GameManager.Instance.OnClientDisconnects(clientId);
+            GameManager.Instance.clientHistory.RemoveAt((int)clientId);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error handling client disconnect: {e.Message}");
+        }
     }
 }

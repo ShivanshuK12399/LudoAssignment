@@ -35,7 +35,7 @@ MonoBehaviour:
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
     - line: '|   companyName: DefaultCompany'
-    - line: '|   productName: Ludo Assignment'
+    - line: '|   productName: Multiplayer Ludo'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
@@ -117,7 +117,7 @@ MonoBehaviour:
     - line: '|   bakeCollisionMeshes: 0'
     - line: '|   forceSingleInstance: 0'
     - line: '|   useFlipModelSwapchain: 1'
-    - line: '|   resizableWindow: 0'
+    - line: '|   resizableWindow: 1'
     - line: '|   useMacAppStoreValidation: 0'
     - line: '|   macAppStoreCategory: public.app-category.games'
     - line: '|   gpuSkinning: 0'
@@ -164,7 +164,9 @@ MonoBehaviour:
     - line: '|   visionOSBundleVersion: 1.0'
     - line: '|   tvOSBundleVersion: 1.0'
     - line: '|   bundleVersion: 1.0'
-    - line: '|   preloadedAssets: []'
+    - line: '|   preloadedAssets:'
+    - line: '|   - {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100,
+        type: 3}'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
     - line: '|   m_HolographicPauseOnTrackingLoss: 1'
@@ -810,10 +812,10 @@ MonoBehaviour:
     - rid: 2355916083753385984
       type: {class: WindowsPlatformSettings, ns: UnityEditor.WindowsStandalone, asm: UnityEditor.WindowsStandalone.Extensions}
       data:
-        m_Development: 0
+        m_Development: 1
         m_ConnectProfiler: 0
         m_BuildWithDeepProfilingSupport: 0
-        m_AllowDebugging: 0
+        m_AllowDebugging: 1
         m_WaitForManagedDebugger: 0
         m_ManagedDebuggerFixedPort: 0
         m_ExplicitNullChecks: 0

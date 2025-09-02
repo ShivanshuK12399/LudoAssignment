@@ -7,10 +7,8 @@ public class DataManager : MonoBehaviour
     // carry game mode information between scenes
     public static DataManager Instance;
 
-    public int matchEntryFee;
-    public enum GameMode { Singlplayer,Paidmatch};
-    public GameMode gameMode;
-
+    public string joinCode;
+    public GameObject playerPrefab;
 
     void Awake()
     {
@@ -24,16 +22,4 @@ public class DataManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    void Start()
-    {
-        // Hook gameMode to DropDown
-        MainMenuUI.Instance.gameModeDropdown.onValueChanged.AddListener(index => 
-        {
-            gameMode = (GameMode)index;
-        });
-
-        MainMenuUI.Instance.gameModeDropdown.value = (int)gameMode; // Dropdown first value will be set by gameMode 
-    }
-
 }

@@ -26,7 +26,6 @@ public class TurnSystem : NetworkBehaviour
 
     public void StartTurn(PlayerType player)
     {
-        //print($"I {GameManager.Instance.GetLocalPlayer()} is owner");
         dice.rolledNumber = GameManager.Instance.GetCurrentPlayer().stepsToMove = 0;
         
         RolledSixServerRpc(false);
@@ -42,12 +41,11 @@ public class TurnSystem : NetworkBehaviour
         else dice.SetDiceInteractive(false);
 
         OnTurnChanged?.Invoke(player);
-        //Debug.Log($"Turn: {player}");
     }
 
     private void MoveDiceToPlayer(PlayerType player)
     {
-        // Moves dice parent to current payer
+        // Moves dice to current payer
 
         Transform holder = (player == PlayerType.Green) ? greenDiceHolder : blueDiceHolder;
         //dice.transform.SetParent(holder);
@@ -71,13 +69,13 @@ public class TurnSystem : NetworkBehaviour
 
         if (!hasMovableToken)
         {
-            //Debug.Log("No valid tokens to move. Switching turn...");
+            Debug.Log("No valid tokens to move. Switching turn...");
             Invoke(nameof(SwitchTurn), 0.5f);
         }
     }
     void SwitchTurn()
     {
-        //print($"Player switched from {this}");
+        //Debug.Log($"Player switched from {this}");
         GameManager.Instance.SwitchTurn();
     }
 

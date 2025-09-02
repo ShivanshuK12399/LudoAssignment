@@ -40,11 +40,13 @@ public class PlayerController : NetworkBehaviour
                 playerType.Value = PlayerType.Blue;
         }
 
-        //Debug.Log($"{playerType} Player spawned.");
+        //Debug.Log($"{playerType.Value} Player spawned.");
 
         var setup = playerSetups.First(s => s.type == playerType.Value);
         piecePrefab = setup.piecePrefab;
-        GameManager.Instance.RegisterPlayerController(this);
+        
+        Instance.RegisterPlayerController(this); // register this player controller in game manager
+        Instance.clientHistory.Add(this.gameObject); // keep track of clients by their clientId index
     }
 
 
@@ -73,7 +75,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        print("Piece selected");
+        Debug.Log("Piece selected");
         selectedPiece = token;
         MoveSelectedPiece();
     }
@@ -103,7 +105,7 @@ public class PlayerController : NetworkBehaviour
             }
             else
             {
-                //print($"Player switched from {this}");
+                //Debug.Log($"Player switched from {this}");
                 GameManager.Instance.SwitchTurn(); // Normal switch
             }
         };

@@ -17,8 +17,8 @@ public class DiceController : NetworkBehaviour
     public bool getDiceNumManually; // chech YES if want to select num manually
     public int rolledNumber = 0; // To be used by PlayerController
 
-    private bool isRolling = false;
-    private bool canRoll = true;
+    public bool isRolling = false;
+    public bool canRoll = true;
 
 
     void OnMouseDown()
@@ -30,6 +30,9 @@ public class DiceController : NetworkBehaviour
 
         if (!isRolling && canRoll)
         {
+            //Debug.Log("Dice clicked");
+            isRolling = true;
+            canRoll = false;
             RollDiceServerRpc();
         }
     }
@@ -48,8 +51,6 @@ public class DiceController : NetworkBehaviour
     {
         rolledNumber = number;  // Set rolled number for local player use
         animator.enabled = true;
-        isRolling = true;
-        canRoll = false;
         animator.Play("DiceRoll", -1, 0f); // Name of your dice animation clip
         StartCoroutine(OnDiceAnimationComplete(number, 0.25f));
     }

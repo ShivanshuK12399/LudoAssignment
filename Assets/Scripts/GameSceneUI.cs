@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System.Scripts;
 using static System.Scripts.GameManager;
+using System.Collections;
 
 public class GameSceneUI : MonoBehaviour
 {
@@ -12,10 +13,11 @@ public class GameSceneUI : MonoBehaviour
     public GameObject networkPanel;
     public Button HostBtn;
     public Button ClientBtn;
+    public TextMeshProUGUI joincodeText;
 
     [Header("Win Screen")]
-    public GameObject winScreen;
-    public TMP_Text winText, paidMatchText;
+    public GameObject endPanel;
+    public TMP_Text gameEndedText;
 
     [Space(15)]
     public Button mainMenuBtn;
@@ -23,11 +25,11 @@ public class GameSceneUI : MonoBehaviour
 
     void Start()
     {
-        networkPanel.SetActive(true);
+        //networkPanel.SetActive(true);
         // hook main menu button
         mainMenuBtn.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("MainMenu");
+            StartCoroutine(Disconnect());
         });
 
         HostBtn.onClick.AddListener(() =>
@@ -42,30 +44,41 @@ public class GameSceneUI : MonoBehaviour
             networkPanel.SetActive(false);
         });
 
+        Instance.EndScreen += ShowEndPanel;
+        joincodeText.text = DataManager.Instance.joinCode;
+    }
 
-        if (DataManager.Instance!=null) // checking game mode 
+    public void ShowEndPanel(PlayerType player, int index) // index: 0 = disconnects, 1 = wins
+    {
+        switch (index)
         {
-            GameMode(DataManager.Instance.gameMode);
+            case 0:
+                // disconnects
+                gameEndedText.text = $"{player} Player \nDisconnects!";
+                break;
+
+            case 1: 
+                // wins
+                gameEndedText.text = $"{player} Player Wins!";
+                break;
+
+            default:
+                break;
+        }
+        endPanel.SetActive(true);
+    }
+
+    IEnumerator Disconnect()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.Shutdown();
+            yield return null;
+            Destroy(NetworkManager.Singleton.gameObject);
         }
 
-        Instance.OnPlayerWon += ShowWinScreen;
+        // After shutdown, load MainMenu
+        SceneManager.LoadScene("MainMenu");
     }
 
-    void ShowWinScreen(GameManager.PlayerType winner)
-    {
-        winText.text = $"{winner} Player Wins!";
-        winScreen.SetActive(true);
-    }
-
-    void GameMode(DataManager.GameMode gameMode)
-    {
-        float price = (float)(DataManager.Instance.matchEntryFee + (0.9 * DataManager.Instance.matchEntryFee));
-
-        if (DataManager.Instance.gameMode == DataManager.GameMode.Paidmatch)
-        {
-            paidMatchText.text = $"Paid Match - \r\nWinner gets ₹{price} (after 10% fee)";
-            return;
-        }
-        else paidMatchText.text = gameMode.ToString();
-    }
 }
