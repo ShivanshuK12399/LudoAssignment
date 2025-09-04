@@ -10,6 +10,10 @@ public class DataManager : MonoBehaviour
     public string joinCode;
     public GameObject playerPrefab;
 
+    [Space(15)]
+    public int totalPlayers = 2;
+    public int totalPiecesPerPlayer = 2;
+
     void Awake()
     {
         if (Instance == null)

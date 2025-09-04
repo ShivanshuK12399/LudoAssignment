@@ -572,6 +572,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joinCode: 
   playerPrefab: {fileID: 1203982340031737902, guid: 19700b1d10a746545b533e8f3a097522, type: 3}
+  totalPlayers: 2
+  totalPiecesPerPlayer: 4
 --- !u!4 &671217985
 Transform:
   m_ObjectHideFlags: 0

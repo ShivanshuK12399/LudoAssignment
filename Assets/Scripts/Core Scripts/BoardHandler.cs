@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Scripts;
@@ -16,11 +17,15 @@ public class BoardHandler : NetworkBehaviour
     [Header("Path Tiles")]
     public List<Transform> greenPathPoints;
     public List<Transform> bluePathPoints;
+    public List<Transform> redPathPoints;
+    public List<Transform> yellowPathPoints;
     public List<Transform> safeTiles;
 
     [Header("Pieces")]
     public GameObject[] greenPieces;
     public GameObject[] bluePieces;
+    public GameObject[] redPieces;
+    public GameObject[] yellowPieces;
     public List<PieceController> allPieces=new List<PieceController>(); // active pieces
 
     [Space(15)]
@@ -43,15 +48,19 @@ public class BoardHandler : NetworkBehaviour
     public void PrepareBoard()
     {
         // declaring array size
-        greenPieces = new GameObject[GameManager.Instance.numberOfPiecesPerPlayer];
-        bluePieces = new GameObject[GameManager.Instance.numberOfPiecesPerPlayer];
+        greenPieces = new GameObject[GameManager.Instance.totalPiecesPerPlayer];
+        bluePieces = new GameObject[GameManager.Instance.totalPiecesPerPlayer];
+        redPieces = new GameObject[GameManager.Instance.totalPiecesPerPlayer];
+        yellowPieces = new GameObject[GameManager.Instance.totalPiecesPerPlayer];
 
         // --- Get PlayerControllers ---
         var greenPlayer = GameManager.Instance.greenPlayerController;
         var bluePlayer = GameManager.Instance.bluePlayerController;
+        var redPlayer = GameManager.Instance.redPlayerController;
+        var yellowPlayer = GameManager.Instance.yellowPlayerController;
 
         // --- Green Pieces ---
-        for (int i = 0; i < GameManager.Instance.numberOfPiecesPerPlayer; i++)
+        for (int i = 0; i < GameManager.Instance.totalPiecesPerPlayer; i++)
         {
             var piece = Instantiate(greenPlayer.piecePrefab, initialGreenPoints[i].position, Quaternion.identity);
             var netObj = piece.GetComponent<NetworkObject>();
@@ -63,7 +72,7 @@ public class BoardHandler : NetworkBehaviour
         }
 
         // --- Blue Pieces ---
-        for (int i = 0; i < GameManager.Instance.numberOfPiecesPerPlayer; i++)
+        for (int i = 0; i < GameManager.Instance.totalPiecesPerPlayer; i++)
         {
             var piece = Instantiate(bluePlayer.piecePrefab, initialBluePoints[i].position, Quaternion.identity);
             var netObj = piece.GetComponent<NetworkObject>();
@@ -150,19 +159,21 @@ public class BoardHandler : NetworkBehaviour
             token.transform.position = initialBluePoints[System.Array.IndexOf(bluePieces, token)].position;
         }*/
     }
-    public List<PieceController> GetOpponentPieceOnTile(Transform movingPieceCurrentTile, PieceController movingPiece)
+    public List<PieceController> GetOpponentPieceOnTile(Transform attackerTile, PieceController attackerPiece)
     {
         // Give list of pieces on tile which is to be captured
 
         List<PieceController> capturedPieces = new List<PieceController>();
-        foreach (var piece in allPieces)
+        foreach (var defenderPiece in allPieces)
         {
-            if (piece == movingPiece) continue;
+            if (defenderPiece == attackerPiece || defenderPiece.currentTileIndex.Value<0 || defenderPiece.GetCurrentTile() == null) continue;
 
-            if (piece.GetCurrentTile() == movingPieceCurrentTile && piece.playerController != movingPiece.playerController)
+            if (defenderPiece.GetCurrentTile() == attackerTile && defenderPiece.playerController != attackerPiece.playerController)
             {
-                //Debug.Log($"Opponent found: {piece}");
-                capturedPieces.Add(piece);
+                Debug.Log($"Piece captured");
+                Debug.Log($"Attacker id: {attackerPiece.GetComponent<NetworkObject>().NetworkObjectId}, Tile: {attackerTile.name}");
+                Debug.Log($"Defender id: {defenderPiece.GetComponent<NetworkObject>().NetworkObjectId}, Tile: {defenderPiece.GetCurrentTile().name}");
+                capturedPieces.Add(defenderPiece);
             }
         }
         return capturedPieces;

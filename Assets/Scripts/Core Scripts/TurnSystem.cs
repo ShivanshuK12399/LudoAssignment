@@ -16,6 +16,8 @@ public class TurnSystem : NetworkBehaviour
     public DiceController dice;
     [SerializeField] private Transform greenDiceHolder;
     [SerializeField] private Transform blueDiceHolder;
+    [SerializeField] private Transform redDiceHolder;
+    [SerializeField] private Transform yellowDiceHolder;
 
 
     void Awake()
@@ -48,8 +50,24 @@ public class TurnSystem : NetworkBehaviour
         // Moves dice to current payer
 
         Transform holder = (player == PlayerType.Green) ? greenDiceHolder : blueDiceHolder;
-        //dice.transform.SetParent(holder);
-        //dice.transform.localPosition = new Vector3(0, 0, -0.5f);
+        switch (player)
+        {
+            case PlayerType.Green:
+                holder = greenDiceHolder;
+                break;
+            case PlayerType.Blue:
+                holder = blueDiceHolder;
+                break;
+            case PlayerType.Red:
+                holder = redDiceHolder;
+                break;
+            case PlayerType.Yellow:
+                holder = yellowDiceHolder;
+                break;
+            default:
+                Debug.Log("Invalid Player");
+                break;
+        }
         dice.transform.position = new Vector3(holder.position.x, holder.position.y, holder.position.z - 0.5f);
     }
 
@@ -69,7 +87,7 @@ public class TurnSystem : NetworkBehaviour
 
         if (!hasMovableToken)
         {
-            Debug.Log("No valid tokens to move. Switching turn...");
+            //Debug.Log("No valid tokens to move. Switching turn...");
             Invoke(nameof(SwitchTurn), 0.5f);
         }
     }

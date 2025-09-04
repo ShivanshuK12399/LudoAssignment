@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Scripts;
@@ -10,6 +11,7 @@ public class PlayerController : NetworkBehaviour
     public NetworkVariable<PlayerType> playerType = new NetworkVariable<PlayerType>
     (
        PlayerType.None,
+       //PlayerType.Green,
        NetworkVariableReadPermission.Everyone,    // who can read
        NetworkVariableWritePermission.Server      // who can write
     );
@@ -32,16 +34,6 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsServer) // only server decides
-        {
-            if (OwnerClientId == NetworkManager.ServerClientId)
-                playerType.Value = PlayerType.Green;
-            else
-                playerType.Value = PlayerType.Blue;
-        }
-
-        //Debug.Log($"{playerType.Value} Player spawned.");
-
         var setup = playerSetups.First(s => s.type == playerType.Value);
         piecePrefab = setup.piecePrefab;
         
@@ -115,10 +107,29 @@ public class PlayerController : NetworkBehaviour
 
     public bool HasValidMove(int steps)
     {
-        GameObject[] pieces= Instance.currentPlayer == PlayerType.Green ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
-        
+        GameObject[] pieces = new GameObject[0];
+        switch (Instance.currentPlayer)
+        {
+            case PlayerType.Green:
+                pieces = BoardHandler.Instance.greenPieces;
+                break;
+            case PlayerType.Blue:
+                pieces = BoardHandler.Instance.bluePieces;
+                break;
+            case PlayerType.Red:
+                pieces = BoardHandler.Instance.redPieces;
+                break;
+            case PlayerType.Yellow:
+                pieces = BoardHandler.Instance.yellowPieces;
+                break;
+            default:
+                Debug.Log("Invalid Current Player");
+                break;
+        }
+
         foreach (var token in pieces)
         {
+            //Debug.Log($"{token.name} checking for valid move of {steps} steps");
             var piece = token.GetComponent<PieceController>();
             if (piece.CanMove(steps))
                 return true;
@@ -132,7 +143,7 @@ public class PlayerController : NetworkBehaviour
         if (piece.GetComponent<PieceController>().hasReachedHome)
             homeCount++;
 
-        if (homeCount >= Instance.numberOfPiecesPerPlayer) // number of pieces per player in game
+        if (homeCount >= Instance.totalPiecesPerPlayer)
         {
             Instance.PlayerWonServerRpc(Instance.currentPlayer);
         }

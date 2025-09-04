@@ -341,8 +341,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  playerController: {fileID: 0}
-  pieceOwner: 1
-  hasReachedHome: 0
   currentTileIndex:
     m_InternalValue: -1
+  playerController: {fileID: 0}
+  pieceOwner: 0
+  hasReachedHome: 0

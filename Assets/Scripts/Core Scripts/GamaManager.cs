@@ -7,24 +7,26 @@ namespace System.Scripts
     public class GameManager : NetworkBehaviour
     {
         public static GameManager Instance;
-        public event System.Action<PlayerType,int> EndScreen;
-        public enum PlayerType { None, Green, Blue }
+        public event System.Action<PlayerType, int> EndScreen;
+        public enum PlayerType { None=-1, Green, Blue, Red, Yellow }
         //public event Action OnMatchRestarted;
 
         [Header("Components")]
         public GameSceneUI gameSceneUI;
         public PlayerController greenPlayerController;
         public PlayerController bluePlayerController;
+        public PlayerController redPlayerController;
+        public PlayerController yellowPlayerController;
         public PlayerType currentPlayer;
 
         public PlayerController[] allPlayers
         {
-            get { return new PlayerController[] { greenPlayerController, bluePlayerController}; }
+            get { return new PlayerController[] { greenPlayerController, bluePlayerController, redPlayerController, yellowPlayerController }; }
         }
 
         [Space(15)]
-        public int numberOfPlayers = 2; // Currently only supports 2 players
-        public int numberOfPiecesPerPlayer = 2; // Number of pieces per player
+        public int totalPlayers; // Currently only supports 2 players
+        public int totalPiecesPerPlayer; // Number of pieces per player
         public bool gameEnded = false;
         public List<GameObject> clientHistory = new List<GameObject>();
 
@@ -35,9 +37,13 @@ namespace System.Scripts
             else Destroy(gameObject);
         }
 
+        private void Start()
+        {
+            totalPlayers=DataManager.Instance.totalPlayers;
+            totalPiecesPerPlayer=DataManager.Instance.totalPiecesPerPlayer;
+        }
 
-
-        [ServerRpc(RequireOwnership =false)]
+        [ServerRpc(RequireOwnership = false)]
         public void StartTurnServerRpc(PlayerType player)
         {
             if (!IsHost) return;
@@ -47,7 +53,7 @@ namespace System.Scripts
         [ClientRpc]
         public void StartTurnClientRpc(PlayerType player)
         {
-            Debug.Log($"Current player: {player}");
+            //Debug.Log($"Current player: {player}");
             currentPlayer = player;
             UpdatePiecesZ();
             TurnSystem.Instance.StartTurn(player);
@@ -65,7 +71,7 @@ namespace System.Scripts
         public void PlayerWonClientRpc(PlayerType player)
         {
             Debug.Log($"Player {player} wins!");
-            EndScreen?.Invoke(player,1); // 1 = wins
+            EndScreen?.Invoke(player, 1); // 1 = wins
 
             // Stop game or show win screen later
             gameEnded = true;
@@ -77,7 +83,9 @@ namespace System.Scripts
         public void SwitchTurn()
         {
             //Debug.Log($"Switching turn from {currentPlayer}" );
-            currentPlayer = (currentPlayer == PlayerType.Green) ? PlayerType.Blue : PlayerType.Green;
+            currentPlayer = (PlayerType)(((int)currentPlayer + 1) % totalPlayers);
+            if(currentPlayer == PlayerType.None) currentPlayer = PlayerType.Green; // Skip None
+
             StartTurnServerRpc(currentPlayer);
         }
 
@@ -85,8 +93,28 @@ namespace System.Scripts
         {
             foreach (var player in allPlayers) // allPlayers is a list of PlayerControllers
             {
+                if (player == null) continue; // Skip if player is not assigned
+
                 bool isCurrent = (player == GetCurrentPlayer());
-                var pieces = (player.playerType.Value == PlayerType.Green) ? BoardHandler.Instance.greenPieces : BoardHandler.Instance.bluePieces;
+                var pieces = new GameObject[0];
+                switch (player.playerType.Value)
+                {
+                    case PlayerType.Green:
+                        pieces = BoardHandler.Instance.greenPieces;
+                        break;
+                    case PlayerType.Blue:
+                        pieces = BoardHandler.Instance.bluePieces;
+                        break;
+                    case PlayerType.Red:
+                        pieces = BoardHandler.Instance.redPieces;
+                        break;
+                    case PlayerType.Yellow:
+                        pieces = BoardHandler.Instance.yellowPieces;
+                        break;
+                    default:
+                        Debug.Log("Invalid Player");
+                        break;
+                }
 
                 foreach (var piece in pieces)
                 {
@@ -97,10 +125,25 @@ namespace System.Scripts
 
         public void RegisterPlayerController(PlayerController pc)
         {
-            if (pc.playerType.Value == PlayerType.Green)
-                greenPlayerController = pc;
-            else if (pc.playerType.Value == PlayerType.Blue)
-                bluePlayerController = pc;
+            switch (pc.playerType.Value)
+            {
+                case PlayerType.Green:
+                    greenPlayerController = pc;
+                    break;
+                case PlayerType.Blue:
+                    bluePlayerController = pc;
+                    break;
+                case PlayerType.Red:
+                    redPlayerController = pc;
+                    break;
+                case PlayerType.Yellow:
+                    yellowPlayerController = pc;
+                    break;
+                default:
+                    Debug.Log("Invalid Player");
+                    break;
+            }
+            //print($"registerd: {pc.playerType.Value}"); 
         }
 
         public void OnClientDisconnects(ulong clientId)
@@ -124,29 +167,27 @@ namespace System.Scripts
 
         public PlayerController GetCurrentPlayer()
         {
-            return currentPlayer == PlayerType.Green ? greenPlayerController : bluePlayerController;
-        }
-        public PlayerType GetLocalPlayer()
-        {
-            if (IsHost) // this works for host
+            switch (currentPlayer)
             {
-                if (OwnerClientId == NetworkManager.Singleton.LocalClientId)
-                    return PlayerType.Green;
-                else
-                    return PlayerType.Blue;
-            }
-            else // this works for client
-            {
-                if (NetworkManager.ServerClientId == NetworkManager.Singleton.LocalClientId)
-                    return PlayerType.Green;
-                else
-                    return PlayerType.Blue;
+                case PlayerType.Green:
+                    return greenPlayerController;
+                case PlayerType.Blue:
+                    return bluePlayerController;
+                case PlayerType.Red:
+                    return redPlayerController;
+                case PlayerType.Yellow:
+                    return yellowPlayerController;
+                default:
+                    Debug.Log("Invalid Current Player");
+                    return null;
             }
         }
         public bool DoesPieceBelongToCurrentPlayer(PieceController piece)
         {
             return (currentPlayer == PlayerType.Green && piece.pieceOwner == PlayerType.Green)
-                || (currentPlayer == PlayerType.Blue && piece.pieceOwner == PlayerType.Blue);
+                || (currentPlayer == PlayerType.Blue && piece.pieceOwner == PlayerType.Blue)
+                || (currentPlayer == PlayerType.Red && piece.pieceOwner == PlayerType.Red)
+                || (currentPlayer == PlayerType.Yellow && piece.pieceOwner == PlayerType.Yellow);
         }
     }
 }

@@ -17,8 +17,8 @@ public class DiceController : NetworkBehaviour
     public bool getDiceNumManually; // chech YES if want to select num manually
     public int rolledNumber = 0; // To be used by PlayerController
 
-    public bool isRolling = false;
-    public bool canRoll = true;
+    private bool isRolling = false;
+    private bool canRoll = true;
 
 
     void OnMouseDown()

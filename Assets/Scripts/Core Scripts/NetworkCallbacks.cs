@@ -33,16 +33,25 @@ public class NetworkCallbacks : MonoBehaviour
     {
         Debug.Log($"🔗 Client {clientId} connected.");
 
-        if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.ConnectedClients.Count == 2)
+        if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.ConnectedClients.Count == DataManager.Instance.totalPlayers)
         {
+            int index = 0;
             foreach (ulong id in NetworkManager.Singleton.ConnectedClientsIds)
             {
                 // creating player object for each connected client instead of NetworkManager's automatic spawning
                 GameObject player = Instantiate(DataManager.Instance.playerPrefab);
+
+                // assign player type based on index
+                var controller = player.GetComponent<PlayerController>();
+                controller.playerType.Value = (GameManager.PlayerType)index;
+
+                // making player spawn on network when PlayerType is set
                 player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
+
+                index++;
             }
 
-            Debug.Log("2 players connected, Preparing Board...");
+            Debug.Log($"{GameManager.Instance.totalPlayers} players connected, Preparing Board...");
             BoardHandler.Instance.PrepareBoard();
             GameManager.Instance.StartTurnServerRpc(GameManager.PlayerType.Green);
         }

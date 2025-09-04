@@ -22,12 +22,29 @@ public class PieceController : NetworkBehaviour
     public PlayerType pieceOwner;
     public bool hasReachedHome = false;
     private float moveSpeed = 6f;
+    private int localIndex = -1; // used to get piece localation as network variable delay in syncing
 
 
-
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        playerController = (pieceOwner==PlayerType.Green) ? Instance.greenPlayerController: Instance.bluePlayerController;
+        switch (pieceOwner)
+        {
+            case PlayerType.Green:
+                playerController = Instance.greenPlayerController;
+                break;
+            case PlayerType.Blue:
+                playerController = Instance.bluePlayerController;
+                break;
+            case PlayerType.Red:
+                playerController = Instance.redPlayerController;
+                break;
+            case PlayerType.Yellow:
+                playerController = Instance.yellowPlayerController;
+                break;
+            default:
+                Debug.Log("Invalid Player");
+                break;
+        }
     }
 
     void OnMouseDown()
@@ -51,7 +68,25 @@ public class PieceController : NetworkBehaviour
         }
 
         // Get correct path based on piece color
-        var path = pieceOwner == PlayerType.Green ? BoardHandler.Instance.greenPathPoints : BoardHandler.Instance.bluePathPoints;
+        List<Transform> path = new List<Transform>();
+        switch (pieceOwner)
+        {
+            case PlayerType.Green:
+                path = BoardHandler.Instance.greenPathPoints;
+                break;
+            case PlayerType.Blue:
+                path = BoardHandler.Instance.bluePathPoints;
+                break;
+            case PlayerType.Red:
+                path = BoardHandler.Instance.redPathPoints;
+                break;
+            case PlayerType.Yellow:
+                path = BoardHandler.Instance.yellowPathPoints;
+                break;
+            default:
+                Debug.Log("Invalid Player");
+                break;
+        }
 
         TurnSystem.Instance.HasMovedServerRpc(true);
         StartCoroutine(MoveAlongPath(path, steps));
@@ -61,9 +96,12 @@ public class PieceController : NetworkBehaviour
     {
         if (currentTileIndex.Value == -1) steps = 1; // Move only 1 step when get on board from base
 
+        localIndex= currentTileIndex.Value;
+        ChangeCurrentTileIndexServerRpc(localIndex+steps); // setting future tile index before movement cuz network var updates with delay
+
         while (steps > 0)
         {
-            int nextIndex = currentTileIndex.Value + 1;
+            int nextIndex = localIndex + 1;
             if (nextIndex >= path.Count)
             {
                 Debug.Log($"{name} has reached the end.");
@@ -77,10 +115,10 @@ public class PieceController : NetworkBehaviour
                 yield return null;
             }
 
-            ChangeCurrentTileIndexServerRpc(nextIndex);
+            localIndex = nextIndex;
             steps--;
 
-            if (currentTileIndex.Value + 1 == path.Count) // currentTileIndex + 1 is used beacuse indexing start from 0
+            if (localIndex + 1 == path.Count) // currentTileIndex + 1 is used beacuse indexing start from 0
             {
                 Debug.Log($"{name} has reached home.");
                 hasReachedHome = true;
@@ -154,9 +192,25 @@ Skip:
     }
     public Transform GetCurrentTile()
     {
-        var path = pieceOwner == PlayerType.Green ?
-                   BoardHandler.Instance.greenPathPoints :
-                   BoardHandler.Instance.bluePathPoints;
+        List<Transform> path = new List<Transform>();
+        switch (pieceOwner)
+        {
+            case PlayerType.Green:
+                path = BoardHandler.Instance.greenPathPoints;
+                break;
+            case PlayerType.Blue:
+                path = BoardHandler.Instance.bluePathPoints;
+                break;
+            case PlayerType.Red:
+                path = BoardHandler.Instance.redPathPoints;
+                break;
+            case PlayerType.Yellow:
+                path = BoardHandler.Instance.yellowPathPoints;
+                break;
+            default:
+                Debug.Log("Invalid Player");
+                break;
+        }
 
         return (currentTileIndex.Value >= 0 && currentTileIndex.Value < path.Count)
             ? path[currentTileIndex.Value]
